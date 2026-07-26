@@ -2,15 +2,92 @@
 //  DiskTreeBuilder.swift
 //  graucore
 //
-//  TODO(Phase 3): implement. See docs/ARCHITECTURE.md § 4 and
-//  docs/TASKS.md for the per-phase acceptance criteria.
+//  Builds a partial disk tree: for a given root, returns the
+//  top-N largest immediate children. The user can drill into
+//  any child to expand it further (lazy expansion).
 //
-//  Stub created in Task 0.3 (scaffold) so the package builds and the
-//  test target runs. Real implementation lands in the named phase.
+//  v1 ships a Top-N list view, NOT a full treemap. The full
+//  treemap lands in v1.1 per docs/REVIEW.md S3.
 //
 
 import Foundation
 
-/// Placeholder namespace so the file compiles. Replace with the real
-/// type when the module is implemented.
-public enum DiskTreeBuilderPlaceholder {}
+public actor DiskTreeBuilder {
+
+    public init() {}
+
+    /// Builds a single-level Top-N list of the largest immediate
+    /// children of `root`. Sizes each in parallel.
+    public func topFolders(
+        at root: URL,
+        limit: Int = 20,
+        followSymlinks: Bool = false
+    ) async -> [DiskTreeNode] {
+        let fm = FileManager.default
+        guard let contents = try? fm.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: [.isDirectoryKey, .fileSizeKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+        ) else { return [] }
+
+        let symlinks = contents.filter { url in
+            (try? url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) ?? false
+        }
+        let candidateURLs = contents.filter { !symlinks.contains($0) || followSymlinks }
+
+        let sizer = DirectorySizer()
+        let sizes = await withTaskGroup(
+            of: (URL, Int64).self,
+            returning: [URL: Int64].self
+        ) { group in
+            for url in candidateURLs {
+                group.addTask {
+                    var isDir: ObjCBool = false
+                    let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
+                    if exists && isDir.boolValue {
+                        var total: Int64 = 0
+                        for await event in sizer.size(root: url) {
+                            if case .completed(_, let size) = event {
+                                total = size.bytes
+                            }
+                        }
+                        return (url, total)
+                    } else if exists {
+                        let size = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
+                        return (url, size)
+                    }
+                    return (url, 0)
+                }
+            }
+            var out: [URL: Int64] = [:]
+            for await (url, size) in group {
+                if size > 0 { out[url] = size }
+            }
+            return out
+        }
+
+        let nodes = sizes
+            .sorted { $0.value > $1.value }
+            .prefix(limit)
+            .map { (url, size) in
+                DiskTreeNode(
+                    url: url,
+                    name: url.lastPathComponent,
+                    size: ByteSize(bytes: size)
+                )
+            }
+        return Array(nodes)
+    }
+
+    /// Builds the size of a single path (used when drilling into
+    /// a subdirectory).
+    public func size(of path: URL) async -> ByteSize {
+        let sizer = DirectorySizer()
+        for await event in sizer.size(root: path) {
+            if case .completed(_, let size) = event {
+                return size
+            }
+        }
+        return .zero
+    }
+}
