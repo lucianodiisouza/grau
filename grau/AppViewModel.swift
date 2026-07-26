@@ -20,29 +20,34 @@ public final class AppViewModel {
     public var selectedSection: AppSection = .dashboard
 
     /// Whether the user has completed the first-run onboarding.
-    public var hasOnboarded: Bool {
-        get { UserDefaults.standard.bool(forKey: Self.hasOnboardedKey) }
-        set { UserDefaults.standard.set(newValue, forKey: Self.hasOnboardedKey) }
-    }
+    /// Stored property (not computed) so the @Observable system
+    /// tracks writes and SwiftUI views re-render.
+    public var hasOnboarded: Bool
 
     /// Whether the developer features are visible in the sidebar.
-    public var devModeEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: Self.devModeKey) }
-        set { UserDefaults.standard.set(newValue, forKey: Self.devModeKey) }
-    }
+    public var devModeEnabled: Bool
 
     /// Threshold in days for the Old Downloads category. Default 90.
-    public var downloadsThresholdDays: Int {
-        get {
-            let stored = UserDefaults.standard.integer(forKey: Self.downloadsThresholdDaysKey)
-            return stored == 0 ? 90 : stored
-        }
-        set { UserDefaults.standard.set(newValue, forKey: Self.downloadsThresholdDaysKey) }
-    }
+    public var downloadsThresholdDays: Int
 
     public init() {
-        // UserDefaults default for devModeEnabled is false.
-        // If the key is not set, bool(forKey:) returns false. Good.
+        // Read persisted state once at init time. We don't mirror
+        // writes back to UserDefaults via didSet because @Observable
+        // already handles the view-update side; we just need a hook
+        // for persistence. (We could add a sink, but for v1 the
+        // explicit persist() helper is enough.)
+        self.hasOnboarded = UserDefaults.standard.bool(forKey: Self.hasOnboardedKey)
+        self.devModeEnabled = UserDefaults.standard.bool(forKey: Self.devModeKey)
+        let storedDays = UserDefaults.standard.integer(forKey: Self.downloadsThresholdDaysKey)
+        self.downloadsThresholdDays = storedDays == 0 ? 90 : storedDays
+    }
+
+    /// Persist the current state to UserDefaults. Call after any
+    /// mutation to hasOnboarded / devModeEnabled / downloadsThresholdDays.
+    public func persist() {
+        UserDefaults.standard.set(hasOnboarded, forKey: Self.hasOnboardedKey)
+        UserDefaults.standard.set(devModeEnabled, forKey: Self.devModeKey)
+        UserDefaults.standard.set(downloadsThresholdDays, forKey: Self.downloadsThresholdDaysKey)
     }
 
     // MARK: - Keys

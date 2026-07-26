@@ -87,14 +87,20 @@ struct OnboardingView: View {
     private var footer: some View {
         HStack {
             if step > 0 {
-                Button("Skip") { appVM.hasOnboarded = true }
-                    .buttonStyle(.borderless)
+                Button("Skip") {
+                    appVM.hasOnboarded = true
+                    appVM.persist()
+                }
+                .buttonStyle(.borderless)
             }
             Spacer()
             if step < 2 {
                 PrimaryButton("Continue") { step += 1 }
             } else {
-                PrimaryButton("Get started") { appVM.hasOnboarded = true }
+                PrimaryButton("Get started") {
+                    appVM.hasOnboarded = true
+                    appVM.persist()
+                }
             }
         }
     }

@@ -101,7 +101,10 @@ struct PermissionPrimerView: View {
                 PrimaryButton("Continue") { step += 1 }
             } else {
                 if coordinator.state.fullDiskAccess {
-                    PrimaryButton("Done") { appVM.hasOnboarded = true }
+                    PrimaryButton("Done") {
+                        appVM.hasOnboarded = true
+                        appVM.persist()
+                    }
                 } else {
                     PrimaryButton("Open System Settings") {
                         coordinator.openSystemSettingsAndPoll()
