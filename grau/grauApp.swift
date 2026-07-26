@@ -54,15 +54,13 @@ struct grauApp: App {
             MenuBarContentView()
                 .environment(appVM)
         } label: {
-            // Template image — the macOS menu bar tints it for
-            // light/dark automatically. The image is 44x44 but
-            // the menu bar slots it into the standard ~22pt slot;
-            // SwiftUI resizes to fit.
+            // Template image at 44x44 (22pt @ 2x). macOS tints
+            // it for light/dark menu bar automatically and slots
+            // it into the standard template size. Do NOT
+            // resizable()/frame() — those modifiers are ignored
+            // by MenuBarExtra, which uses the image at its native
+            // template size.
             Image("MenuBarIcon")
-                .renderingMode(.template)
-                .resizable()
-                .interpolation(.high)
-                .frame(width: 18, height: 18)
         }
         .menuBarExtraStyle(.window)
 
