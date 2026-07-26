@@ -171,7 +171,20 @@ the corresponding release.
 
 ## Phase 4 — Duplicates finder (beta 4)
 
-_(filled in when Phase 4 lands)_
+- [ ] Duplicates tab defaults the root to `~/`.
+- [ ] "Scan" kicks off the 3-phase pipeline (sizing → partial hash
+      → full hash); the live phase label updates.
+- [ ] Duplicate groups are listed; each card shows the file size,
+      number of copies, and wasted bytes.
+- [ ] Each file in a group has a toggle; the oldest-by-mtime file
+      is pre-marked "Keep" (its toggle is OFF).
+- [ ] Empty state: "No duplicates found" when the scan completes
+      with no groups.
+- [ ] Cancellation: Phase 4 doesn't yet have a cancel button
+      (per docs/HANDOFF § 4.3 — defer to v1.1).
+- [ ] Performance: a small `~/` (under 5k files) scans in < 30s.
+      A large home (50k+ files) is a v1.1 concern; v1 uses
+      sequential hashing (parallelism is per-phrase, not per-file).
 
 ## Phase 5 — Dev mode (beta 5)
 

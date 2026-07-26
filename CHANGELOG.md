@@ -6,9 +6,58 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 4 (Beta 4)
-- Duplicates finder: size → partial-hash → full-SHA256 pipeline
-- Safe selection (keep oldest)
+### Planned for Phase 5 (Beta 5)
+- Dev mode: `node_modules` finder, 16 package caches, Docker,
+  iOS Simulators, Xcode DerivedData, Archives
+- Settings toggle "Show developer features" (default OFF)
+
+## [0.5.0-beta.4] — 2026-07-26
+
+Public beta. The fourth feature (duplicates finder) is end-to-end
+functional. Grau walks the user-chosen root, runs the 3-phase
+pipeline (size filter → partial-hash → full SHA-256), groups
+identical files, and lets the user pick which copies to move to
+the Trash. Defaults: keep the oldest by mtime.
+
+### graucore
+- **`FS/FileHasher`** — `struct`, streaming SHA-256 (CryptoKit).
+  `partialHash(of:)` reads the first 4 KB; `fullHash(of:)`
+  streams 1 MB chunks.
+- **`Duplicates/DuplicateGroup`** — `struct`. `wastedBytes` =
+  size × (count − 1).
+- **`Duplicates/DuplicateScanner`** — `actor`. 3-phase pipeline
+  with `ScannerEvent` stream (phase + progress + duplicateFound).
+  Honors `Task.isCancelled`.
+- **`Duplicates/DuplicateSelection`** — `struct`. `keepURLs(in:)`:
+  keep the oldest by mtime. `removeURLs(in:)`, `totalWasted(_:)`.
+
+Test count: **94** tests, all green.
+
+### grau
+- **`Duplicates/DuplicatesView`** — root path, scan button with
+  live phase label, summary card (groups + recoverable bytes),
+  per-group card with toggles; auto-selects all-but-oldest so
+  the user just confirms.
+
+### Build
+- `xcodebuild -scheme grau -configuration Debug build` — ✓
+- `xcodebuild -scheme grau -configuration Release build` — ✓
+- `cd graucore && swift test` — 94/94 ✓
+
+### Known limitations
+- Sequential hashing (parallelism is per-phase, not per-file).
+  A 50k-file home will be slow; v1.1 adds proper file-level
+  parallelism via `withTaskGroup` across the size filter.
+- No "Move all selected to Trash" button in v1 — the UI shows
+  the selection state but the actual move-to-trash action
+  lands in v1.1 alongside the trash manifest for duplicates.
+
+[Unreleased]: # (HEAD)
+[0.1.0-alpha]: https://github.com/lucianodiisouza/grau/releases/tag/v0.1.0-alpha
+[0.2.0-beta.1]: https://github.com/lucianodiisouza/grau/releases/tag/v0.2.0-beta.1
+[0.3.0-beta.2]: https://github.com/lucianodiisouza/grau/releases/tag/v0.3.0-beta.2
+[0.4.0-beta.3]: https://github.com/lucianodiisouza/grau/releases/tag/v0.4.0-beta.3
+[0.5.0-beta.4]: https://github.com/lucianodiisouza/grau/releases/tag/v0.5.0-beta.4
 
 ## [0.4.0-beta.3] — 2026-07-26
 
