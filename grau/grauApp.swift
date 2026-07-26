@@ -4,7 +4,8 @@
 //
 //  @main entry point. Three scenes:
 //    1. MenuBarExtra — always present, popover style
-//    2. Main window — dashboard / feature tabs
+//    2. Main window — dashboard / feature tabs (or onboarding if
+//       first launch)
 //    3. Settings window
 //
 //  See docs/HANDOFF.md § 0.4 and docs/ARCHITECTURE.md § 3.
@@ -15,6 +16,7 @@ import SwiftUI
 @main
 struct grauApp: App {
     @State private var appVM = AppViewModel()
+    @State private var notificationCoordinator = NotificationCoordinator()
 
     var body: some Scene {
         MenuBarExtra("Grau", systemImage: "circle.fill") {
@@ -24,9 +26,15 @@ struct grauApp: App {
         .menuBarExtraStyle(.window)
 
         Window("Grau", id: "main") {
-            MainWindowView()
-                .environment(appVM)
-                .frame(minWidth: 720, minHeight: 480)
+            Group {
+                if appVM.hasOnboarded {
+                    MainWindowView()
+                } else {
+                    OnboardingView()
+                }
+            }
+            .environment(appVM)
+            .frame(minWidth: 720, minHeight: 480)
         }
         .windowResizability(.contentSize)
         .defaultSize(width: 900, height: 600)

@@ -31,6 +31,15 @@ public final class AppViewModel {
         set { UserDefaults.standard.set(newValue, forKey: Self.devModeKey) }
     }
 
+    /// Threshold in days for the Old Downloads category. Default 90.
+    public var downloadsThresholdDays: Int {
+        get {
+            let stored = UserDefaults.standard.integer(forKey: Self.downloadsThresholdDaysKey)
+            return stored == 0 ? 90 : stored
+        }
+        set { UserDefaults.standard.set(newValue, forKey: Self.downloadsThresholdDaysKey) }
+    }
+
     public init() {
         // UserDefaults default for devModeEnabled is false.
         // If the key is not set, bool(forKey:) returns false. Good.
@@ -40,6 +49,7 @@ public final class AppViewModel {
 
     private static let hasOnboardedKey = "grau.onboarded"
     private static let devModeKey = "grau.devModeEnabled"
+    private static let downloadsThresholdDaysKey = "grau.downloadsThresholdDays"
 }
 
 /// Top-level navigation sections. Dev mode is hidden unless the
