@@ -80,7 +80,7 @@ targets:
         CFBundleVersion: "1"
         CFBundlePackageType: APPL
         LSMinimumSystemVersion: "14.0"
-        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.utilities
         CFBundleIconName: AppIcon
         NSHumanReadableCopyright: "MIT — see LICENSE"
         NSSupportsAutomaticTermination: true
