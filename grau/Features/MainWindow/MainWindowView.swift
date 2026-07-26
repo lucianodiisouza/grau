@@ -22,14 +22,15 @@ struct MainWindowView: View {
                 },
                 selection: $bindableVM.selectedSection
             ) { section in
-                NavigationLink(value: section) {
-                    Label(section.title, systemImage: section.systemImage)
-                }
+                Label(section.title, systemImage: section.systemImage)
+                    .tag(section)
             }
+            .listStyle(.sidebar)
             .navigationTitle("Grau")
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
         } detail: {
             detail
+                .navigationTitle(appVM.selectedSection.title)
         }
         .navigationSplitViewStyle(.balanced)
     }
