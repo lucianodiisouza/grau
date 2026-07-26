@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.2.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view.
+**Status:** ✅ **v1.3.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
@@ -12,7 +12,7 @@
 - 🧹 **Junk cleaner** — caches, logs, browser data, dev caches, iOS backups. Five categories with safe defaults; everything moves to `~/.Trash`, never deleted.
 - 📦 **App uninstaller** — uninstalls `.app` bundles *and* their residual data (caches, preferences, app support, group containers).
 - 🔍 **Disk lens** — visualize your disk as a Top-N list or a squarified treemap. Drill down to see what's eating space.
-- 🪞 **Duplicates finder** — find byte-identical files anywhere. 3-phase pipeline (size → partial hash → full SHA-256). Defaults to keeping the oldest copy.
+- 🪞 **Duplicates finder** — find byte-identical files anywhere. 3-phase pipeline (size → partial hash → full SHA-256). Cancellable mid-scan. Defaults to keeping the oldest copy.
 - 🛠 **Dev mode** — track `node_modules`, 16 package manager caches, Docker, iOS Simulators, Xcode DerivedData, and archives. Hidden behind a Settings toggle.
 - ↩️ **Trash restore** — every clean writes a JSON manifest. The in-app Trash view shows past operations and lets you restore a whole batch in one click.
 
@@ -56,7 +56,7 @@ cd grau
 # Generate the Xcode project
 xcodegen generate
 
-# Run the graucore unit tests (161 tests)
+# Run the graucore unit tests (166 tests)
 cd graucore && swift test
 
 # Build the macOS app

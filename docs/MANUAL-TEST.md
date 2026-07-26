@@ -269,6 +269,35 @@ Dev Mode is hidden by default. Enable it via Settings → Developer
 
 _(filled in when Phase 6a lands)_
 
+## Phase 8 — Cancel + auto-tune + filters (1.3)
+
+### Duplicates Stop button
+
+- [ ] Start a scan of a large `~/` directory. While scanning,
+      the spinner is replaced with a red "Stop" button.
+- [ ] Click "Stop" within 200ms. The scan ends; the phase
+      label reads "Cancelled" (or whatever phase it was on).
+- [ ] A scan that completed before the cancel clicked shows
+      the normal "Full hash done" completion, NOT "Cancelled".
+
+### Auto-tuned parallelism
+
+- [ ] On a Mac with N performance cores, the scanner spawns
+      N (or 16, whichever is smaller) in-flight hash tasks.
+      Watch `Activity Monitor` during a scan to verify.
+- [ ] `defaultParallelism()` returns a value in `[1, 16]`.
+
+### Trash view filters
+
+- [ ] After running multiple clean operations of different
+      kinds, the filter chip menu shows one option per kind
+      plus "All kinds".
+- [ ] Selecting a kind shows only manifests of that kind.
+      Selecting "All kinds" shows everything.
+- [ ] The "Clear" button appears only when a filter is active.
+- [ ] When no manifests match the filter, an empty state
+      reads "No matches".
+
 ## Phase 7 — Performance + treemap (1.2)
 
 ### Duplicates scanner parallelism

@@ -6,11 +6,66 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 8 (1.3)
-- Per-file cancellation in Duplicates scanner
-- In-app trash restore filtering (by kind, by date)
-- Per-CPU-core auto-tuning for the duplicate scanner
+### Planned for Phase 9 (1.4)
 - Treemap labels in the gutter when the cell is too small
+- Per-CPU-core auto-tuning for the duplicate scanner
+  (already shipped in v1.3 as `DuplicateScanner.defaultParallelism()`)
+- Notification center UI for past notifications
+- Configurable per-feature retention windows
+
+## [1.3.0] — 2026-07-26
+
+Quality-of-life and performance pass. The duplicates scanner
+gets a real Stop button and auto-tuned parallelism; the Trash
+view gets a kind + date filter.
+
+### Highlights
+- 🛑 **Duplicates Stop button.** A red "Stop" replaces the
+  spinner mid-scan. Clicking it cancels the in-flight scan
+  via `DuplicateScanner.cancel()`. The phase label flips to
+  "Cancelled" if the scan was terminated before completion.
+- ⚙️ **Auto-tuned parallelism.** `DuplicateScanner`'s
+  default `maxParallelism` is now
+  `min(16, ProcessInfo.activeProcessorCount)`. On a 10-core
+  Mac you get 10 hash workers; on a 2-core MBA you get 2. The
+  8-worker cap is gone.
+- 🔍 **Trash filters.** Filter chip (kind) and date range
+  filter narrow the manifest list. "Clear" resets.
+
+### graucore
+- **`Duplicates/DuplicateScanner`** —
+  * `cancel()` method (idempotent) on the actor.
+  * `defaultParallelism()` static func.
+  * Internal `CancelToken` (lock-protected) holds the active
+    scan's `Task`. `scan()` registers the task via an opaque
+    Int ID (since `Task` is a value type, identity comparison
+    isn't possible).
+  * `maxParallelism` is now `nonisolated let` (immutable
+    after init).
+- Test count: **166** (was 161). New tests cover cancel on a
+  fresh scanner, cancel mid-scan, default-parallelism range,
+  and init-clamping.
+
+### grau
+- `Features/Duplicates/DuplicatesView.swift`: "Stop" button
+  in the toolbar (red tint). After cancel, the phase label
+  reads "Cancelled" if the scan was aborted mid-phase.
+- `Features/Trash/TrashViewModel.swift` + `TrashView.swift`:
+  * `kindFilter`, `dateFrom`, `dateTo` properties.
+  * `filteredManifests` computed property.
+  * `availableKinds` for the filter chip menu.
+  * `clearFilters()` resets.
+  * Filter bar with kind menu, "Clear" button (only shown
+    when a filter is active), and a date-range label.
+  * Empty state for "no matches".
+
+### Files
+- Modified: `graucore/Sources/graucore/Duplicates/DuplicateScanner.swift`,
+  `graucore/Tests/graucoreTests/DuplicateScannerTests.swift`,
+  `grau/Features/Duplicates/DuplicatesView.swift`,
+  `grau/Features/Trash/TrashViewModel.swift`,
+  `grau/Features/Trash/TrashView.swift`,
+  `project.yml`, `grau/Info.plist`.
 
 ## [1.2.0] — 2026-07-26
 
