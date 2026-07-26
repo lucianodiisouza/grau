@@ -75,7 +75,12 @@ struct grauApp: App {
             .environment(appVM)
             .frame(minWidth: 900, minHeight: 600)
         }
-        .windowResizability(.contentSize)
+        // .contentSize resizability makes the window hug the
+        // intrinsic size of its content — which means switching
+        // to a slimmer view (Uninstaller) shrinks the window
+        // itself. .contentMinSize keeps the default + min size
+        // we set, and lets the user grow past it.
+        .windowResizability(.contentMinSize)
         .defaultSize(width: 1100, height: 720)
         .commands {
             CommandGroup(replacing: .appInfo) {
