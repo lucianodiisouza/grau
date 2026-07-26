@@ -269,6 +269,22 @@ Dev Mode is hidden by default. Enable it via Settings → Developer
 
 _(filled in when Phase 6a lands)_
 
+## Phase 9 — Notification center (1.4)
+
+- [ ] A new "Notifications" sidebar item appears between
+      "Trash" and "Settings" (bell SF Symbol).
+- [ ] On a fresh install, the Notifications view shows the
+      "No notifications yet" empty state.
+- [ ] Trigger a junk scan that finds > 1 GB (e.g. on a
+      freshly-bootstrapped machine, click the demo junk
+      category). After Grau fires the alert, the
+      Notifications view shows the entry.
+- [ ] Each card displays the original title, body, the time
+      stamp, and a "Rule: junk > 1 GB" footer.
+- [ ] "Clear" empties the log immediately. The file
+      `~/.grau/notification-log.json` is removed.
+- [ ] Quit Grau and relaunch — the log is preserved.
+
 ## Phase 8 — Cancel + auto-tune + filters (1.3)
 
 ### Duplicates Stop button

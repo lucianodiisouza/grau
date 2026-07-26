@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.3.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters.
+**Status:** ✅ **v1.4.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center for past alerts.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
@@ -15,6 +15,7 @@
 - 🪞 **Duplicates finder** — find byte-identical files anywhere. 3-phase pipeline (size → partial hash → full SHA-256). Cancellable mid-scan. Defaults to keeping the oldest copy.
 - 🛠 **Dev mode** — track `node_modules`, 16 package manager caches, Docker, iOS Simulators, Xcode DerivedData, and archives. Hidden behind a Settings toggle.
 - ↩️ **Trash restore** — every clean writes a JSON manifest. The in-app Trash view shows past operations and lets you restore a whole batch in one click.
+- 🔔 **Notification Center** — every alert Grau fires is also persisted to `~/.grau/notification-log.json`. The in-app Notifications view shows the full history.
 
 ## First principles
 
@@ -56,7 +57,7 @@ cd grau
 # Generate the Xcode project
 xcodegen generate
 
-# Run the graucore unit tests (166 tests)
+# Run the graucore unit tests (172 tests)
 cd graucore && swift test
 
 # Build the macOS app

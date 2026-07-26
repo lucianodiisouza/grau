@@ -6,12 +6,57 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 9 (1.4)
+### Planned for Phase 10 (1.5)
 - Treemap labels in the gutter when the cell is too small
-- Per-CPU-core auto-tuning for the duplicate scanner
-  (already shipped in v1.3 as `DuplicateScanner.defaultParallelism()`)
-- Notification center UI for past notifications
-- Configurable per-feature retention windows
+- Configurable per-feature retention windows (e.g. how long
+  to keep trash manifests)
+- Auto-clean rules ("clean junk older than 7 days")
+- Export last scan as JSON
+
+## [1.4.0] — 2026-07-26
+
+Notification pass. The new "Notifications" sidebar item shows
+every alert Grau has ever fired, persisted to disk.
+
+### Highlights
+- 🔔 **In-app Notification Center.** A new sidebar item
+  (bell SF Symbol) shows the full log of past notifications.
+  Each card displays the rule ID, the time, and the original
+  title + body. "Clear" empties the log.
+- 💾 **Persistent log.** Every successful `UNUserNotificationCenter.add`
+  is also recorded in `~/.grau/notification-log.json` (capped
+  at 200 entries, oldest trimmed). The log survives app
+  restarts and reboots.
+
+### graucore
+- **`Notifications/NotificationLog`** — `actor`. `read()`,
+  `record(ruleID:title:body:)`, `clear()`. Backed by
+  `~/.grau/notification-log.json`. New `NotificationLogEntry`
+  struct (id, timestamp, ruleID, title, body).
+- Test count: **172** (was 166). Six new tests cover the
+  empty-log read, single-entry persistence, sort order,
+  max-entries trim, clear, and init.
+
+### grau
+- `NotificationCoordinator.fire(...)` now also calls
+  `NotificationLog.record(...)` after a successful
+  `UNUserNotificationCenter.add(...)`.
+- `Features/Notifications/NotificationCenterView.swift`:
+  toolbar with Refresh + Clear, ScrollView of cards (icon
+  per rule, title, body, timestamp, "Rule: <id>" footer).
+- `Features/Notifications/NotificationCenterViewModel.swift`:
+  @MainActor @Observable VM with `entries`, `isLoading`,
+  `refresh()`, `clear()`.
+- New sidebar item: **Notifications** (system image `bell`).
+
+### Files
+- New: `graucore/Sources/graucore/Notifications/NotificationLog.swift`,
+  `graucore/Tests/graucoreTests/NotificationLogTests.swift`,
+  `grau/Features/Notifications/NotificationCenterView.swift`,
+  `grau/Features/Notifications/NotificationCenterViewModel.swift`
+- Modified: `grau/Features/Notifications/NotificationCoordinator.swift`,
+  `grau/AppViewModel.swift`, `grau/Features/MainWindow/MainWindowView.swift`,
+  `project.yml`, `grau/Info.plist`.
 
 ## [1.3.0] — 2026-07-26
 
