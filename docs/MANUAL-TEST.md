@@ -269,6 +269,30 @@ Dev Mode is hidden by default. Enable it via Settings → Developer
 
 _(filled in when Phase 6a lands)_
 
+## Phase 10 — Dashboard refresh + treemap tier-2 labels (1.5)
+
+### Dashboard reads real data
+
+- [ ] Open Grau. The "Storage" card shows a real
+      "<N>% used" pill in the top right, and the bar
+      visualizes actual volume usage.
+- [ ] The "Trash" card shows "<N> items" and the real
+      size of ~/.Trash/.
+- [ ] The "Last junk scan" card shows the real last
+      scan summary (or "Never" if you haven't scanned
+      yet).
+- [ ] The "Quick actions" buttons switch the sidebar
+      to the corresponding section.
+- [ ] Pull-to-refresh updates everything.
+
+### Treemap tier-2 labels
+
+- [ ] Switch to Disk Lens → treemap view.
+- [ ] Big cells (>80×36 pt) show name + size.
+- [ ] Medium cells (40×18 to 80×36) show just the size
+      in 9-pt.
+- [ ] Tiny cells (<40×18) are unlabelled (no overflow).
+
 ## Phase 9 — Notification center (1.4)
 
 - [ ] A new "Notifications" sidebar item appears between

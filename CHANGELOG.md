@@ -6,12 +6,45 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 10 (1.5)
-- Treemap labels in the gutter when the cell is too small
+### Planned for Phase 11 (1.6)
 - Configurable per-feature retention windows (e.g. how long
   to keep trash manifests)
 - Auto-clean rules ("clean junk older than 7 days")
 - Export last scan as JSON
+- Per-rule notification cooldowns
+
+## [1.5.0] — 2026-07-26
+
+Dashboard refresh + treemap label fix.
+
+### Highlights
+- 📊 **Real-data Dashboard.** The home screen now reads from
+  `VolumeMonitor` (storage card), `TrashInfoReader` (trash
+  card), and `~/.grau/state.json` (last scan). The fake
+  "237.4 GB / 500.1 GB" placeholders are gone. The Quick
+  Actions row is now wired to the corresponding sidebar
+  sections.
+- 🟦 **Treemap tier-2 labels.** Cells that don't fit the
+  full name + size (between 40×18 and 80×36 pt) now show
+  just the size in a tiny font. Smaller cells (less than
+  40×18) are still unlabelled.
+- 🆕 **DevMode Quick Action** is enabled only when the
+  Settings dev-mode toggle is on.
+
+### graucore
+No engine changes; this is a UI wiring pass.
+
+### grau
+- **`Features/Dashboard/DashboardViewModel.swift`** — new
+  `@MainActor @Observable` VM with `refresh()` that reads
+  storage, trash, and state.
+- **`Features/Dashboard/DashboardView.swift`** — fully
+  rewritten. The storage card now shows a "N% used" pill
+  (red when ≥ 90%), the trash card shows real counts, the
+  last-scan card reads from state, and the quick-action
+  buttons are wired to sidebar navigation.
+- **`Features/DiskLens/DiskTreemapView.swift`** — added a
+  tier-2 label for medium cells (just the size, 9-pt font).
 
 ## [1.4.0] — 2026-07-26
 

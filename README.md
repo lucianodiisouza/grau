@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.4.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center for past alerts.
+**Status:** ✅ **v1.5.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center. Dashboard reads real data.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
