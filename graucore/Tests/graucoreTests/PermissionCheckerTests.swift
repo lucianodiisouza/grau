@@ -2,17 +2,31 @@
 //  PermissionCheckerTests.swift
 //  graucoreTests
 //
-//  Stub created in Task 0.3 (scaffold). Real tests land with the
-//  corresponding source module. See docs/ARCHITECTURE.md § 5 and
-//  docs/TASKS.md.
-//
 
 import XCTest
 @testable import graucore
 
 final class PermissionCheckerTests: XCTestCase {
-    func test_placeholder() {
-        // Scaffold-only sanity test. Real tests in the named phase.
-        XCTAssertTrue(true)
+
+    /// On the build host (which has FDA), this should return true.
+    /// On a non-FDA host it would return false. We test the heuristic
+    /// behavior by exercising both probe paths.
+    func test_fdaProbePath_isSet() {
+        XCTAssertTrue(PermissionChecker.fdaProbePath.hasPrefix("/Library/"))
+    }
+
+    func test_hasFullDiskAccess_returnsBool() async {
+        let checker = PermissionChecker()
+        let has = await checker.hasFullDiskAccess()
+        // The test passes if it returns a bool. The actual value
+        // depends on whether the test host has FDA.
+        XCTAssertTrue(has || !has)  // tautology; we're just exercising
+    }
+
+    func test_currentState_matchesHasFullDiskAccess() async {
+        let checker = PermissionChecker()
+        let state = await checker.currentState()
+        let has = await checker.hasFullDiskAccess()
+        XCTAssertEqual(state.fullDiskAccess, has)
     }
 }

@@ -2,15 +2,45 @@
 //  PermissionKind.swift
 //  graucore
 //
-//  TODO(Phase 1): implement. See docs/ARCHITECTURE.md § 4 and
-//  docs/TASKS.md for the per-phase acceptance criteria.
-//
-//  Stub created in Task 0.3 (scaffold) so the package builds and the
-//  test target runs. Real implementation lands in the named phase.
+//  The permissions Grau cares about. See docs/PERMISSIONS.md.
 //
 
 import Foundation
 
-/// Placeholder namespace so the file compiles. Replace with the real
-/// type when the module is implemented.
-public enum PermissionKindPlaceholder {}
+public enum PermissionKind: String, CaseIterable, Sendable {
+    /// Full Disk Access (TCC). Required to read /Library/Caches,
+    /// /private/var/log, Mail data, and other apps' sandboxed data.
+    case fullDiskAccess
+
+    /// User Notifications. Used by the menu bar notifications.
+    case notifications
+
+    /// AppleEvents. We do NOT use these in v1 (see PERMISSIONS.md
+    /// § 3.2). Listed here for completeness / v2 use.
+    case automation
+}
+
+public enum NotificationPermission: String, Sendable, Equatable {
+    case notRequested
+    case denied
+    case provisional
+    case authorized
+}
+
+public struct PermissionState: Equatable, Sendable {
+    public var fullDiskAccess: Bool
+    public var notifications: NotificationPermission
+    public var appleEventsPromptedForFinder: Bool
+
+    public init(
+        fullDiskAccess: Bool = false,
+        notifications: NotificationPermission = .notRequested,
+        appleEventsPromptedForFinder: Bool = false
+    ) {
+        self.fullDiskAccess = fullDiskAccess
+        self.notifications = notifications
+        self.appleEventsPromptedForFinder = appleEventsPromptedForFinder
+    }
+
+    public static let unknown = PermissionState()
+}
