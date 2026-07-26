@@ -6,28 +6,137 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0853C54634705DCDA5266A65 /* SecondaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D25BFFDB8CB16127505EB6F /* SecondaryButton.swift */; };
+		1BF5F52BDB0EE8AD11CB23AC /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01378AC795CC46D7C1B99EA3 /* MenuBarContentView.swift */; };
+		2246F1624685C2F0E2911938 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E3110DB98F94063A49DC04 /* MainWindowView.swift */; };
+		31F15957E73824185D8B0E73 /* graucore in Frameworks */ = {isa = PBXBuildFile; productRef = 4EBFAAE07D91F3FD2E9146C2 /* graucore */; };
+		352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876E717308A63E4163433FF /* DuplicatesView.swift */; };
+		3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */; };
+		54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B13EF7229DDAAF0784C0DA /* CardView.swift */; };
+		5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */; };
+		69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BB8F4004008FEE12868F34 /* UninstallerView.swift */; };
+		6FE189F0761B074193308825 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A932159D5DF281913EF328D /* EmptyStateView.swift */; };
+		733E1C3E91FD0A6F6EE29077 /* Pill.swift in Sources */ = {isa = PBXBuildFile; fileRef = C295641283A897C9FB3DE833 /* Pill.swift */; };
+		739CC852842061C5E91C9544 /* NotificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */; };
+		73E99703900621CD60499DDE /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3773B175B56A631710DD28D /* PrimaryButton.swift */; };
+		75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C635470D794F17CEB27903B /* ErrorStateView.swift */; };
+		7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092CF365CA4C30B4DED1FD37 /* StorageBar.swift */; };
+		932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */; };
+		93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */; };
+		96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839DBC1C2917DB3E916A3BB /* SettingsView.swift */; };
+		A7187379241005F719D14BF2 /* PreferencesKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68A56B27A5086F480717A44 /* PreferencesKeys.swift */; };
+		A740441052CB6CF2A54BCAD3 /* JunkCleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */; };
+		AAE1198B7ACBE85FDFF8FAB5 /* JunkCleanerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */; };
+		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
+		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
+		F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */; };
+		FA9E4E31716F6F0F636842F2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */; };
+		FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		01378AC795CC46D7C1B99EA3 /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		04E04FDBC0E75675723F7083 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; path = graucore; sourceTree = SOURCE_ROOT; };
 		0761430E8BC47EFFC7FAA3D4 /* grau.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = grau.entitlements; sourceTree = "<group>"; };
+		092CF365CA4C30B4DED1FD37 /* StorageBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageBar.swift; sourceTree = "<group>"; };
+		17E3110DB98F94063A49DC04 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		1D25BFFDB8CB16127505EB6F /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
+		281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCoordinator.swift; sourceTree = "<group>"; };
+		3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunkCleanerViewModel.swift; sourceTree = "<group>"; };
+		3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionPrimerView.swift; sourceTree = "<group>"; };
+		47D0B95B57C92443A397A6E8 /* DiskLensView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskLensView.swift; sourceTree = "<group>"; };
+		4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = GrauColors.xcassets; sourceTree = "<group>"; };
 		4F631A3E70A647C19987FDDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6C635470D794F17CEB27903B /* ErrorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorStateView.swift; sourceTree = "<group>"; };
+		6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = grauApp.swift; sourceTree = "<group>"; };
 		781BCABAEBDFD44AB6C7B30A /* grau.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = grau.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8876E717308A63E4163433FF /* DuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicatesView.swift; sourceTree = "<group>"; };
+		8A932159D5DF281913EF328D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		A3B801EEF5BB68749E896929 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = graucore; path = graucore; sourceTree = SOURCE_ROOT; };
+		A3BB8F4004008FEE12868F34 /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
+		A68A56B27A5086F480717A44 /* PreferencesKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesKeys.swift; sourceTree = "<group>"; };
+		AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunkCleanerView.swift; sourceTree = "<group>"; };
+		AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevModeView.swift; sourceTree = "<group>"; };
+		C295641283A897C9FB3DE833 /* Pill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pill.swift; sourceTree = "<group>"; };
+		C839DBC1C2917DB3E916A3BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
+		DF28F8808670ACD2427830E9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		E7B13EF7229DDAAF0784C0DA /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		F3773B175B56A631710DD28D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		233B096F319197320749A5F3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31F15957E73824185D8B0E73 /* graucore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
+		0D9042A0619E127E0D117AEA /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				139B2E8D2C57A87480F07042 /* Dashboard */,
+				B268E5C958669875CB1E1ECA /* DevMode */,
+				74741B743382EBB157A2A947 /* DiskLens */,
+				3A141ABE21E9FAF12C836519 /* Duplicates */,
+				E3E363DFF3E374B1E85DFFB0 /* JunkCleaner */,
+				913ECEC7C0716E4032B30232 /* MainWindow */,
+				D893F788D0776E54E9D4CECA /* MenuBar */,
+				91857BE3B9040F6D977FDA60 /* Notifications */,
+				832063B4282612E37C93783D /* Onboarding */,
+				3D8EF6E7F85606F1B7D28812 /* Permissions */,
+				7F92D4C79648C16ED50A0355 /* Settings */,
+				9C07CD228B0BEE741D3E0A53 /* Uninstaller */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
 		114789CD8B719C9369A682D6 = {
 			isa = PBXGroup;
 			children = (
 				2B57543AA3B8C1AAB1C4824F /* grau */,
+				7CDCF47F7729ADBC3CD68B3E /* Packages */,
+				04E04FDBC0E75675723F7083 /* graucore */,
 				335D7856BA9F89B15E38C0B8 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		139B2E8D2C57A87480F07042 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				DF28F8808670ACD2427830E9 /* DashboardView.swift */,
+			);
+			path = Dashboard;
 			sourceTree = "<group>";
 		};
 		2B57543AA3B8C1AAB1C4824F /* grau */ = {
 			isa = PBXGroup;
 			children = (
+				B47C099E38168DFD5DAC930C /* DesignSystem */,
+				0D9042A0619E127E0D117AEA /* Features */,
+				2DD271A962316C5CE6774371 /* Persistence */,
+				E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */,
 				0761430E8BC47EFFC7FAA3D4 /* grau.entitlements */,
+				73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */,
 				4F631A3E70A647C19987FDDB /* Info.plist */,
 			);
 			path = grau;
+			sourceTree = "<group>";
+		};
+		2DD271A962316C5CE6774371 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				A68A56B27A5086F480717A44 /* PreferencesKeys.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		335D7856BA9F89B15E38C0B8 /* Products */ = {
@@ -38,6 +147,143 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3A141ABE21E9FAF12C836519 /* Duplicates */ = {
+			isa = PBXGroup;
+			children = (
+				8876E717308A63E4163433FF /* DuplicatesView.swift */,
+			);
+			path = Duplicates;
+			sourceTree = "<group>";
+		};
+		3D8EF6E7F85606F1B7D28812 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
+		49B386A77E4B51098E5372E0 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				E7B13EF7229DDAAF0784C0DA /* CardView.swift */,
+				8A932159D5DF281913EF328D /* EmptyStateView.swift */,
+				6C635470D794F17CEB27903B /* ErrorStateView.swift */,
+				C295641283A897C9FB3DE833 /* Pill.swift */,
+				F3773B175B56A631710DD28D /* PrimaryButton.swift */,
+				1D25BFFDB8CB16127505EB6F /* SecondaryButton.swift */,
+				092CF365CA4C30B4DED1FD37 /* StorageBar.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		74741B743382EBB157A2A947 /* DiskLens */ = {
+			isa = PBXGroup;
+			children = (
+				47D0B95B57C92443A397A6E8 /* DiskLensView.swift */,
+			);
+			path = DiskLens;
+			sourceTree = "<group>";
+		};
+		7CDCF47F7729ADBC3CD68B3E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				A3B801EEF5BB68749E896929 /* graucore */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		7F92D4C79648C16ED50A0355 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				C839DBC1C2917DB3E916A3BB /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		832063B4282612E37C93783D /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		913ECEC7C0716E4032B30232 /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				17E3110DB98F94063A49DC04 /* MainWindowView.swift */,
+			);
+			path = MainWindow;
+			sourceTree = "<group>";
+		};
+		91857BE3B9040F6D977FDA60 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		9C07CD228B0BEE741D3E0A53 /* Uninstaller */ = {
+			isa = PBXGroup;
+			children = (
+				A3BB8F4004008FEE12868F34 /* UninstallerView.swift */,
+			);
+			path = Uninstaller;
+			sourceTree = "<group>";
+		};
+		9E4BEDD0EF4365D7FA2B8631 /* Spacing */ = {
+			isa = PBXGroup;
+			children = (
+				C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */,
+			);
+			path = Spacing;
+			sourceTree = "<group>";
+		};
+		A7BF251A44F88090D50E3752 /* Colors */ = {
+			isa = PBXGroup;
+			children = (
+				4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */,
+			);
+			path = Colors;
+			sourceTree = "<group>";
+		};
+		B268E5C958669875CB1E1ECA /* DevMode */ = {
+			isa = PBXGroup;
+			children = (
+				AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */,
+			);
+			path = DevMode;
+			sourceTree = "<group>";
+		};
+		B47C099E38168DFD5DAC930C /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				A7BF251A44F88090D50E3752 /* Colors */,
+				49B386A77E4B51098E5372E0 /* Components */,
+				9E4BEDD0EF4365D7FA2B8631 /* Spacing */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		D893F788D0776E54E9D4CECA /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				01378AC795CC46D7C1B99EA3 /* MenuBarContentView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		E3E363DFF3E374B1E85DFFB0 /* JunkCleaner */ = {
+			isa = PBXGroup;
+			children = (
+				AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */,
+				3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */,
+			);
+			path = JunkCleaner;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -46,6 +292,8 @@
 			buildConfigurationList = 4A7A9F949B526AF0CE6AB2A8 /* Build configuration list for PBXNativeTarget "grau" */;
 			buildPhases = (
 				D3C265BD6254BF197F9AF807 /* Sources */,
+				58BE181F5AACD69624E97C38 /* Resources */,
+				233B096F319197320749A5F3 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -53,6 +301,7 @@
 			);
 			name = grau;
 			packageProductDependencies = (
+				4EBFAAE07D91F3FD2E9146C2 /* graucore */,
 			);
 			productName = grau;
 			productReference = 781BCABAEBDFD44AB6C7B30A /* grau.app */;
@@ -82,6 +331,9 @@
 			);
 			mainGroup = 114789CD8B719C9369A682D6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0B1346B1C095534EF3B45FC9 /* XCLocalSwiftPackageReference "graucore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 335D7856BA9F89B15E38C0B8 /* Products */;
 			projectDirPath = "";
@@ -92,11 +344,46 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		58BE181F5AACD69624E97C38 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D3C265BD6254BF197F9AF807 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */,
+				54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */,
+				BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */,
+				5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */,
+				D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */,
+				352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */,
+				6FE189F0761B074193308825 /* EmptyStateView.swift in Sources */,
+				75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */,
+				AAE1198B7ACBE85FDFF8FAB5 /* JunkCleanerView.swift in Sources */,
+				A740441052CB6CF2A54BCAD3 /* JunkCleanerViewModel.swift in Sources */,
+				2246F1624685C2F0E2911938 /* MainWindowView.swift in Sources */,
+				1BF5F52BDB0EE8AD11CB23AC /* MenuBarContentView.swift in Sources */,
+				739CC852842061C5E91C9544 /* NotificationCoordinator.swift in Sources */,
+				FA9E4E31716F6F0F636842F2 /* OnboardingView.swift in Sources */,
+				93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */,
+				733E1C3E91FD0A6F6EE29077 /* Pill.swift in Sources */,
+				A7187379241005F719D14BF2 /* PreferencesKeys.swift in Sources */,
+				73E99703900621CD60499DDE /* PrimaryButton.swift in Sources */,
+				0853C54634705DCDA5266A65 /* SecondaryButton.swift in Sources */,
+				96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */,
+				932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */,
+				7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */,
+				69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */,
+				3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,6 +587,20 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0B1346B1C095534EF3B45FC9 /* XCLocalSwiftPackageReference "graucore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = graucore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4EBFAAE07D91F3FD2E9146C2 /* graucore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = graucore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BF0486D0087B3F1756257DAA /* Project object */;
 }

@@ -29,6 +29,10 @@ settings:
       SWIFT_OPTIMIZATION_LEVEL: "-O"
       SWIFT_COMPILATION_MODE: wholemodule
 
+packages:
+  graucore:
+    path: graucore
+
 targets:
   grau:
     type: application
@@ -37,6 +41,12 @@ targets:
       - path: grau
         excludes:
           - "**/.DS_Store"
+      - path: graucore
+        type: folder
+        buildPhase: none
+    dependencies:
+      - package: graucore
+        product: graucore
     info:
       path: grau/Info.plist
       properties:
