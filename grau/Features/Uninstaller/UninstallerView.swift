@@ -72,9 +72,17 @@ struct UninstallerView: View {
 
     @ViewBuilder
     private var twoColumn: some View {
-        HSplitView {
+        // NOTE: do NOT use HSplitView here. The host is a
+        // NavigationSplitView (MainWindowView), and nesting an
+        // AppKit HSplitView inside it makes both split views
+        // fight for the window's resize axis — every sidebar
+        // click shifts the whole window sideways. An HStack with
+        // a divider gives us a fixed two-column layout that
+        // cooperates with the parent NavigationSplitView.
+        HStack(spacing: 0) {
             appList
                 .frame(minWidth: 240, idealWidth: 280, maxWidth: 360)
+            Divider()
             detailPane
                 .frame(minWidth: 360)
         }
