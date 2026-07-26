@@ -48,8 +48,9 @@ struct DiskTreemapView: View {
             color
                 .frame(width: rect.width, height: rect.height)
                 .offset(x: rect.origin.x, y: rect.origin.y)
-            // Label only fits if the cell is big enough.
+            // Three label tiers based on cell size.
             if rect.width > 80 && rect.height > 36 {
+                // Big enough for the full name + size.
                 VStack(alignment: .leading, spacing: 2) {
                     Text(node.name)
                         .font(.callout.weight(.medium))
@@ -62,7 +63,16 @@ struct DiskTreemapView: View {
                 .padding(Spacing.xs)
                 .frame(width: rect.width, height: rect.height, alignment: .topLeading)
                 .offset(x: rect.origin.x, y: rect.origin.y)
+            } else if rect.width >= 40 && rect.height >= 18 {
+                // Medium: just the size, in a smaller font, in the
+                // top-left corner.
+                Text(node.size.humanReadable)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(.primary)
+                    .padding(3)
+                    .offset(x: rect.origin.x, y: rect.origin.y)
             }
+            // else: cell too small — no label.
         }
     }
 
