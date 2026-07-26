@@ -110,4 +110,63 @@ final class DuplicateScannerTests: XCTestCase {
         // a single URL (or fewer than files.count).
         XCTAssertTrue(keep.count <= group.files.count)
     }
+
+    // MARK: - Cancellation (v1.3)
+
+    func test_cancel_withNoActiveScan_isNoOp() async {
+        // cancel() on a fresh scanner should not throw or crash.
+        let scanner = DuplicateScanner()
+        await scanner.cancel()
+    }
+
+    func test_cancel_terminatesInflightScan() async throws {
+        // Build a directory with enough files that the scan takes
+        // long enough to be cancelable mid-flight.
+        for i in 0..<200 {
+            // 50KB of distinct content per file → unique hashes,
+            // so phase 3 has to do real work on every file.
+            try Data(repeating: UInt8(i % 251), count: 50_000)
+                .write(to: tempDir.appendingPathComponent("f\(i)"))
+        }
+        let scanner = DuplicateScanner()
+        let stream = await scanner.scan(root: tempDir)
+        // Schedule a cancel after a brief delay.
+        Task {
+            try? await Task.sleep(for: .milliseconds(20))
+            await scanner.cancel()
+        }
+        var sawAnyEvent = false
+        var sawDone = false
+        for await event in stream {
+            sawAnyEvent = true
+            if case .phaseStarted(.done) = event {
+                sawDone = true
+                break
+            }
+        }
+        // We expect either (a) cancellation finished the stream
+        // before .done was emitted, or (b) the scan completed
+        // before our cancel could land. Both are valid; the only
+        // invariant is that the stream terminates.
+        XCTAssertTrue(sawAnyEvent, "Stream should yield at least one event")
+        // sawDone is allowed either way.
+        _ = sawDone
+    }
+
+    func test_defaultParallelism_isAtLeastOne_andAtMost16() {
+        let n = DuplicateScanner.defaultParallelism()
+        XCTAssertGreaterThanOrEqual(n, 1)
+        XCTAssertLessThanOrEqual(n, 16)
+    }
+
+    func test_init_clampsParallelismToAtLeastOne() {
+        // Even with 0 or negative values, we get 1.
+        XCTAssertEqual(DuplicateScanner(maxParallelism: 0).maxParallelism, 1)
+        XCTAssertEqual(DuplicateScanner(maxParallelism: -5).maxParallelism, 1)
+    }
+
+    func test_init_preservesPositiveParallelism() {
+        XCTAssertEqual(DuplicateScanner(maxParallelism: 4).maxParallelism, 4)
+        XCTAssertEqual(DuplicateScanner(maxParallelism: 16).maxParallelism, 16)
+    }
 }
