@@ -19,11 +19,29 @@ public actor DuplicateScanner {
     /// for a desktop app — keeps disk IO reasonable while
     /// parallelizing well enough to scan a 50k-file home in a
     /// couple of minutes.
-    public let maxParallelism: Int
+    public nonisolated let maxParallelism: Int
 
-    public init(hasher: FileHasher = FileHasher(), maxParallelism: Int = 8) {
+    /// Holds the active scan's `Task` so `cancel()` can reach it
+    /// from outside the AsyncStream consumer. Lock-protected
+    /// because it's read and written from non-isolated contexts
+    /// (the AsyncStream initializer closure runs detached from
+    /// the actor's executor).
+    private let cancelToken = CancelToken()
+
+    public init(
+        hasher: FileHasher = FileHasher(),
+        maxParallelism: Int = DuplicateScanner.defaultParallelism()
+    ) {
         self.hasher = hasher
         self.maxParallelism = max(1, maxParallelism)
+    }
+
+    /// Default parallelism: number of performance cores, capped at
+    /// 16. Falls back to 8 if `ProcessInfo` can't determine the
+    /// active processor count.
+    public static func defaultParallelism() -> Int {
+        let cores = ProcessInfo.processInfo.activeProcessorCount
+        return min(16, max(1, cores))
     }
 
     public enum Phase: String, Sendable {
@@ -55,9 +73,49 @@ public actor DuplicateScanner {
                 )
                 continuation.finish()
             }
+            let id = self.cancelToken.register(task)
             continuation.onTermination = { _ in
                 task.cancel()
+                self.cancelToken.unregister(id)
             }
+        }
+    }
+
+    /// Cancels the in-flight scan, if any. Idempotent: calling
+    /// cancel() with no active scan is a no-op. The scan's
+    /// `Task.isCancelled` checks will short-circuit the next
+    /// phase boundary and the AsyncStream will finish.
+    public func cancel() {
+        cancelToken.cancel()
+    }
+
+    /// Lock-protected holder for the active scan task. Marked
+    /// `@unchecked Sendable` because the lock is the only thing
+    /// synchronizing access. We key registrations by an opaque
+    /// Int ID since `Task` is a value type and can't be
+    /// compared by identity.
+    private final class CancelToken: @unchecked Sendable {
+        private let lock = NSLock()
+        private var nextID: Int = 0
+        private var tasks: [Int: Task<Void, Never>] = [:]
+
+        func register(_ t: Task<Void, Never>) -> Int {
+            lock.lock(); defer { lock.unlock() }
+            nextID += 1
+            tasks[nextID] = t
+            return nextID
+        }
+
+        func unregister(_ id: Int) {
+            lock.lock(); defer { lock.unlock() }
+            tasks.removeValue(forKey: id)
+        }
+
+        func cancel() {
+            lock.lock()
+            let snapshot = Array(tasks.values)
+            lock.unlock()
+            for t in snapshot { t.cancel() }
         }
     }
 
