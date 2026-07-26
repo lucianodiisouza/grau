@@ -90,32 +90,42 @@ struct UninstallerView: View {
 
     @ViewBuilder
     private var appList: some View {
-        VStack(spacing: 0) {
-            List(viewModel.apps, selection: Binding(
-                get: { viewModel.selectedApp },
-                set: { newValue in
-                    if let app = newValue {
-                        Task { await viewModel.selectApp(app) }
-                    } else {
-                        viewModel.selectedApp = nil
-                        viewModel.residuals = []
-                        viewModel.selectedResidualIDs = []
-                    }
+        // No `VStack` wrapper: a parent VStack around a List can
+        // produce a 1-pt gap on the leading/trailing edges that
+        // disappears the moment a row is selected, because the
+        // selection highlight reaches the edge. The List itself
+        // fills the column.
+        //
+        // `.listStyle(.sidebar)` removes the plain-List default
+        // insets so the selection highlight and the unselected
+        // rows line up to the same edge.
+        List(viewModel.apps, selection: Binding(
+            get: { viewModel.selectedApp },
+            set: { newValue in
+                if let app = newValue {
+                    Task { await viewModel.selectApp(app) }
+                } else {
+                    viewModel.selectedApp = nil
+                    viewModel.residuals = []
+                    viewModel.selectedResidualIDs = []
                 }
-            )) { app in
-                HStack {
-                    Image(systemName: app.isAppleSystemComponent ? "lock.shield" : "app")
-                        .foregroundStyle(.secondary)
-                    VStack(alignment: .leading) {
-                        Text(app.name)
-                        Text(app.installedVersion)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .tag(app)
             }
+        )) { app in
+            HStack(spacing: Spacing.sm) {
+                AppIconView(
+                    image: viewModel.icon(for: app),
+                    isSystem: app.isAppleSystemComponent
+                )
+                VStack(alignment: .leading) {
+                    Text(app.name)
+                    Text(app.installedVersion)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .tag(app)
         }
+        .listStyle(.sidebar)
     }
 
     @ViewBuilder
@@ -153,7 +163,12 @@ struct UninstallerView: View {
     @ViewBuilder
     private func header(for app: InstalledApp) -> some View {
         CardView {
-            HStack(alignment: .top) {
+            HStack(alignment: .top, spacing: Spacing.md) {
+                AppIconView(
+                    image: viewModel.icon(for: app),
+                    isSystem: app.isAppleSystemComponent,
+                    size: 56
+                )
                 VStack(alignment: .leading, spacing: Spacing.xs) {
                     Text(app.name)
                         .font(.headline)
@@ -163,6 +178,8 @@ struct UninstallerView: View {
                     Text(app.bundleURL.path)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                 }
                 Spacer()
                 if app.isAppleSystemComponent {

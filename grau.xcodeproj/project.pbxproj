@@ -21,6 +21,7 @@
 		54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B13EF7229DDAAF0784C0DA /* CardView.swift */; };
 		5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */; };
 		69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BB8F4004008FEE12868F34 /* UninstallerView.swift */; };
+		6C5AC4BB0519E87638E4F0FB /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2C1EFBC97FC456C3BE002E /* AppIconView.swift */; };
 		6FE189F0761B074193308825 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A932159D5DF281913EF328D /* EmptyStateView.swift */; };
 		733E1C3E91FD0A6F6EE29077 /* Pill.swift in Sources */ = {isa = PBXBuildFile; fileRef = C295641283A897C9FB3DE833 /* Pill.swift */; };
 		739CC852842061C5E91C9544 /* NotificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */; };
@@ -59,6 +60,7 @@
 		092CF365CA4C30B4DED1FD37 /* StorageBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageBar.swift; sourceTree = "<group>"; };
 		16EF57B788A5A637D6877462 /* PermissionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCoordinator.swift; sourceTree = "<group>"; };
 		17E3110DB98F94063A49DC04 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		1A2C1EFBC97FC456C3BE002E /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
 		1D25BFFDB8CB16127505EB6F /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
 		281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCoordinator.swift; sourceTree = "<group>"; };
 		2BE9A5DBEFA81C978A104E4D /* NotificationCenterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterViewModel.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 		9C07CD228B0BEE741D3E0A53 /* Uninstaller */ = {
 			isa = PBXGroup;
 			children = (
+				1A2C1EFBC97FC456C3BE002E /* AppIconView.swift */,
 				A3BB8F4004008FEE12868F34 /* UninstallerView.swift */,
 				89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */,
 			);
@@ -427,6 +430,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C5AC4BB0519E87638E4F0FB /* AppIconView.swift in Sources */,
 				FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */,
 				870BB561A161D01F40828188 /* AutomationView.swift in Sources */,
 				2AF34B5496424DD07B5F364B /* AutomationViewModel.swift in Sources */,

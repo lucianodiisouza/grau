@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import AppKit
 import Observation
 import graucore
 
@@ -27,6 +28,11 @@ final class UninstallerViewModel {
     var errorMessage: String?
     private(set) var lastOutcome: Uninstaller.ExecuteOutcome?
 
+    /// Cache of app icons keyed by bundle URL path, so the SwiftUI
+    /// view doesn't have to call `NSWorkspace` on every render. We
+    /// pre-warm the cache for every scanned app after `scan()`.
+    private(set) var icons: [String: NSImage] = [:]
+
     private let scanner: AppScanner
     private let finder: ResidualFinder
     private let uninstaller: Uninstaller
@@ -41,6 +47,13 @@ final class UninstallerViewModel {
         self.uninstaller = uninstaller
     }
 
+    /// Look up the cached icon for an app. Returns nil until
+    /// `scan()` has warmed the cache, in which case the view should
+    /// show a placeholder (the generic app SF Symbol).
+    func icon(for app: InstalledApp) -> NSImage? {
+        icons[app.bundleURL.path]
+    }
+
     var totalSelectedSize: ByteSize {
         ByteSize(bytes: residuals
             .filter { selectedResidualIDs.contains($0.id) }
@@ -53,7 +66,25 @@ final class UninstallerViewModel {
         errorMessage = nil
         let installed = await scanner.scan()
         apps = installed
+        warmIconCache(for: installed)
         phase = .loaded
+    }
+
+    /// Pre-loads the real `.icns` icon for every scanned app via
+    /// `NSWorkspace`. This is cheap (a single disk read per bundle)
+    /// and means `icon(for:)` is a pure dictionary lookup in
+    /// SwiftUI's render path.
+    private func warmIconCache(for apps: [InstalledApp]) {
+        for app in apps {
+            let key = app.bundleURL.path
+            if icons[key] != nil { continue }
+            // `icon(forFile:)` resolves through LaunchServices and
+            // returns the canonical icon the user sees in Finder,
+            // honoring custom .icns / document icons.
+            let image = NSWorkspace.shared.icon(forFile: key)
+            image.size = NSSize(width: 32, height: 32)
+            icons[key] = image
+        }
     }
 
     func selectApp(_ app: InstalledApp) async {
