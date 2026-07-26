@@ -152,7 +152,22 @@ the corresponding release.
 
 ## Phase 3 — Disk lens (beta 3)
 
-_(filled in when Phase 3 lands)_
+- [ ] Disk lens tab shows the root ("/") and its top 50 children
+      by size.
+- [ ] List is sorted descending by size.
+- [ ] Each row shows the folder name + size.
+- [ ] Clicking the chevron (or double-clicking the row) drills into
+      that folder; the breadcrumb updates to show the new path.
+- [ ] "Root" button in the toolbar jumps back to "/".
+- [ ] "Refresh" re-runs the scan from the current path.
+- [ ] Right-click → "Reveal in Finder" opens Finder with the
+      folder selected.
+- [ ] Right-click → "Move to Trash" trashes the folder (no
+      manifest — single-item, no UI for the cleaner).
+- [ ] Performance: scanning the root on a real Mac with ~30 top
+      entries completes in < 30s; subdirectories are faster.
+- [ ] Cancellation: there's no explicit cancel button in v1;
+      scans complete or finish quickly enough to skip it.
 
 ## Phase 4 — Duplicates finder (beta 4)
 

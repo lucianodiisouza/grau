@@ -6,9 +6,53 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 3 (Beta 3)
-- Disk lens: Top-N folders list with drill + context menu
-- (Real treemap deferred to v1.1)
+### Planned for Phase 4 (Beta 4)
+- Duplicates finder: size → partial-hash → full-SHA256 pipeline
+- Safe selection (keep oldest)
+
+## [0.4.0-beta.3] — 2026-07-26
+
+Public beta. The third feature (disk lens) is end-to-end functional.
+Grau shows the top 50 folders by size at the current path (starting
+at "/"). The user can drill in by double-clicking a row, jump back
+to the root via the toolbar, and right-click to reveal in Finder or
+move to Trash.
+
+v1 ships a Top-N list view, NOT a full treemap. The treemap
+deferred to v1.1 per docs/REVIEW.md S3.
+
+### graucore
+- **`Lens/DiskTreeNode`** — struct: id, url, name, size,
+  optional children. `isLeaf` and `sortedChildren` helpers.
+- **`Lens/DiskTreeBuilder`** — `actor`. `topFolders(at:limit:)`:
+  parallel-sized Top-N list. `size(of:)`: single-path size.
+  Symlinks excluded by default.
+
+Test count: **86** tests, all green.
+
+### grau
+- **`DiskLens/DiskLensView`** — toolbar (Root, Refresh), breadcrumb,
+  Top-N list with size column, drill-in on double-click, context
+  menu (Reveal in Finder, Move to Trash via `FileManager.trashItem`).
+
+### Build
+- `xcodebuild -scheme grau -configuration Debug build` — ✓
+- `xcodebuild -scheme grau -configuration Release build` — ✓
+- `cd graucore && swift test` — 86/86 ✓
+
+### Known limitations
+- No explicit cancel button; v1 scans are fast enough on the
+  top 50 to not need one.
+- The Move-to-Trash action in the context menu does NOT write
+  a Trash manifest (it uses `FileManager.trashItem` directly,
+  not `TrashMover`). v1.1 can route this through `TrashMover`
+  for consistency.
+
+[Unreleased]: # (HEAD)
+[0.1.0-alpha]: https://github.com/lucianodiisouza/grau/releases/tag/v0.1.0-alpha
+[0.2.0-beta.1]: https://github.com/lucianodiisouza/grau/releases/tag/v0.2.0-beta.1
+[0.3.0-beta.2]: https://github.com/lucianodiisouza/grau/releases/tag/v0.3.0-beta.2
+[0.4.0-beta.3]: https://github.com/lucianodiisouza/grau/releases/tag/v0.4.0-beta.3
 
 ## [0.3.0-beta.2] — 2026-07-26
 
