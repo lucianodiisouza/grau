@@ -61,6 +61,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
     case diskLens
     case duplicates
     case devMode
+    case trash
     case settings
 
     public var id: String { rawValue }
@@ -73,6 +74,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
         case .diskLens:     "Disk Lens"
         case .duplicates:   "Duplicates"
         case .devMode:      "Dev Mode"
+        case .trash:        "Trash"
         case .settings:     "Settings"
         }
     }
@@ -85,6 +87,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
         case .diskLens:     "circle.grid.3x3"
         case .duplicates:   "doc.on.doc"
         case .devMode:      "hammer"
+        case .trash:        "arrow.uturn.backward.circle"
         case .settings:     "gear"
         }
     }

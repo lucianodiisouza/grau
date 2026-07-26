@@ -43,6 +43,7 @@ struct MainWindowView: View {
         case .diskLens:     DiskLensView()
         case .duplicates:   DuplicatesView()
         case .devMode:      DevModeView()
+        case .trash:        TrashView()
         case .settings:     SettingsView()
         }
     }
