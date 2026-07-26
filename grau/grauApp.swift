@@ -50,9 +50,11 @@ struct grauApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("Grau", systemImage: "circle.fill") {
+        MenuBarExtra {
             MenuBarContentView()
                 .environment(appVM)
+        } label: {
+            Image("MenuBarIcon")
         }
         .menuBarExtraStyle(.window)
 
@@ -65,10 +67,10 @@ struct grauApp: App {
                 }
             }
             .environment(appVM)
-            .frame(minWidth: 720, minHeight: 480)
+            .frame(minWidth: 900, minHeight: 600)
         }
         .windowResizability(.contentSize)
-        .defaultSize(width: 900, height: 600)
+        .defaultSize(width: 1100, height: 720)
         .commands {
             CommandGroup(replacing: .appInfo) {
                 Button("About Grau") {
