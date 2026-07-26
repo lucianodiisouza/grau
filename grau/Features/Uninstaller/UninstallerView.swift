@@ -90,42 +90,59 @@ struct UninstallerView: View {
 
     @ViewBuilder
     private var appList: some View {
-        // No `VStack` wrapper: a parent VStack around a List can
-        // produce a 1-pt gap on the leading/trailing edges that
-        // disappears the moment a row is selected, because the
-        // selection highlight reaches the edge. The List itself
-        // fills the column.
-        //
-        // `.listStyle(.sidebar)` removes the plain-List default
-        // insets so the selection highlight and the unselected
-        // rows line up to the same edge.
-        List(viewModel.apps, selection: Binding(
-            get: { viewModel.selectedApp },
-            set: { newValue in
-                if let app = newValue {
-                    Task { await viewModel.selectApp(app) }
-                } else {
-                    viewModel.selectedApp = nil
-                    viewModel.residuals = []
-                    viewModel.selectedResidualIDs = []
+        // ScrollView + LazyVStack instead of List. SwiftUI's
+        // List (including `.sidebar` style) reserves a leading
+        // indent for the system sidebar look — here the list is
+        // its own column, so that indent shows up as a ~20pt gap
+        // on unselected rows that disappears the moment a row is
+        // selected. Building the rows ourselves gives us full
+        // control: the icon sits at the same leading edge whether
+        // the row is highlighted or not.
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(viewModel.apps) { app in
+                    appRow(for: app)
                 }
             }
-        )) { app in
-            HStack(spacing: Spacing.sm) {
-                AppIconView(
-                    image: viewModel.icon(for: app),
-                    isSystem: app.isAppleSystemComponent
-                )
-                VStack(alignment: .leading) {
-                    Text(app.name)
-                    Text(app.installedVersion)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .tag(app)
         }
-        .listStyle(.sidebar)
+    }
+
+    @ViewBuilder
+    private func appRow(for app: InstalledApp) -> some View {
+        let isSelected = viewModel.selectedApp == app
+        HStack(spacing: Spacing.sm) {
+            AppIconView(
+                image: viewModel.icon(for: app),
+                isSystem: app.isAppleSystemComponent
+            )
+            VStack(alignment: .leading) {
+                Text(app.name)
+                Text(app.installedVersion)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.accentColor.opacity(0.25))
+                    .padding(.horizontal, 6)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if isSelected {
+                viewModel.selectedApp = nil
+                viewModel.residuals = []
+                viewModel.selectedResidualIDs = []
+            } else {
+                Task { await viewModel.selectApp(app) }
+            }
+        }
     }
 
     @ViewBuilder
