@@ -113,4 +113,78 @@ final class AppScannerTests: XCTestCase {
         )
         XCTAssertTrue(app.isAppleSystemComponent)
     }
+
+    func test_scan_bundleSize_defaultsToZero() async throws {
+        try makeFakeApp(
+            at: tempDir.appendingPathComponent("TinyApp.app"),
+            plist: [
+                "CFBundleIdentifier": "com.example.TinyApp",
+                "CFBundleDisplayName": "Tiny",
+                "CFBundleShortVersionString": "1.0",
+            ]
+        )
+        let scanner = AppScanner(searchPaths: [tempDir])
+        let apps = await scanner.scan()
+        XCTAssertEqual(apps.count, 1)
+        // scan() returns quickly; the size is filled in by a later
+        // pass (see computeBundleSize), not synchronously.
+        XCTAssertEqual(apps.first?.bundleSize, 0)
+    }
+
+    func test_scan_withSizes_populatesBundleSize() async throws {
+        let appURL = tempDir.appendingPathComponent("SizedApp.app")
+        try makeFakeApp(
+            at: appURL,
+            plist: [
+                "CFBundleIdentifier": "com.example.SizedApp",
+                "CFBundleDisplayName": "Sized",
+                "CFBundleShortVersionString": "1.0",
+            ]
+        )
+        // Drop 5 KB of payload inside the bundle so computeBundleSize
+        // has something concrete to count.
+        let payload = Data(repeating: 0x42, count: 5_000)
+        try payload.write(
+            to: appURL.appendingPathComponent("Contents/payload.bin")
+        )
+
+        let scanner = AppScanner(searchPaths: [tempDir])
+        let apps = await scanner.scan(withSizes: ())
+        XCTAssertEqual(apps.count, 1)
+        let size = apps.first?.bundleSize ?? 0
+        XCTAssertGreaterThanOrEqual(size, 5_000,
+            "bundleSize should be at least the size of the payload we wrote")
+    }
+
+    func test_computeBundleSize_returnsZeroForMissingBundle() {
+        let ghost = tempDir.appendingPathComponent("DoesNotExist.app")
+        XCTAssertEqual(AppScanner.computeBundleSize(at: ghost), 0)
+    }
+
+    func test_computeBundleSize_countsAllFilesInBundle() throws {
+        let appURL = tempDir.appendingPathComponent("CountedApp.app")
+        try makeFakeApp(
+            at: appURL,
+            plist: [
+                "CFBundleIdentifier": "com.example.CountedApp",
+                "CFBundleDisplayName": "Counted",
+                "CFBundleShortVersionString": "1.0",
+            ]
+        )
+        // Two files of known size, in nested subdirectories. Create
+        // the Resources directory first since Data.write doesn't
+        // create intermediate paths.
+        try FileManager.default.createDirectory(
+            at: appURL.appendingPathComponent("Contents/Resources"),
+            withIntermediateDirectories: true
+        )
+        try Data(repeating: 0x1, count: 1_000).write(
+            to: appURL.appendingPathComponent("Contents/a.bin")
+        )
+        try Data(repeating: 0x2, count: 2_500).write(
+            to: appURL.appendingPathComponent("Contents/Resources/b.bin")
+        )
+        let size = AppScanner.computeBundleSize(at: appURL)
+        XCTAssertGreaterThanOrEqual(size, 3_500)
+    }
 }
