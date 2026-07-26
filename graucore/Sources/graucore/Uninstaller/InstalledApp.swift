@@ -20,6 +20,13 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
     public let hasUninstallHelper: Bool
     public let helperPath: URL?
 
+    /// Total size of the `.app` bundle on disk, in bytes. Defaults
+    /// to `0` (unknown) when the caller has not yet computed it —
+    /// `AppScanner.scan()` returns apps with this set to 0, and the
+    /// caller fills it in incrementally (see `UninstallerViewModel`).
+    /// Use `bundleSize > 0` as the "known" signal in the UI.
+    public let bundleSize: Int64
+
     public init(
         id: String,
         name: String,
@@ -29,7 +36,8 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
         lastModified: Date? = nil,
         groupContainerIDs: [String] = [],
         hasUninstallHelper: Bool = false,
-        helperPath: URL? = nil
+        helperPath: URL? = nil,
+        bundleSize: Int64 = 0
     ) {
         self.id = id
         self.name = name
@@ -40,6 +48,7 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
         self.groupContainerIDs = groupContainerIDs
         self.hasUninstallHelper = hasUninstallHelper
         self.helperPath = helperPath
+        self.bundleSize = bundleSize
     }
 
     /// True if the bundle ID starts with "com.apple." — these are
