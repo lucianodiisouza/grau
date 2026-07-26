@@ -32,6 +32,9 @@ settings:
 packages:
   graucore:
     path: graucore
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
 
 targets:
   grau:
@@ -49,6 +52,8 @@ targets:
     dependencies:
       - package: graucore
         product: graucore
+      - package: Sparkle
+        product: Sparkle
     info:
       path: grau/Info.plist
       properties:
@@ -69,6 +74,13 @@ targets:
         NSPrivacyTracking: false
         NSPrivacyTrackingDomains: []
         NSPrivacyCollectedDataTypes: []
+        # Sparkle self-update. The feed URL points to the
+        # GitHub-hosted appcast; the public key matches the
+        # EdDSA private key in the developer's keychain. The
+        # private key NEVER lands in this repo.
+        SUFeedURL: "https://lucianodiisouza.github.io/grau/appcast.xml"
+        SUPublicEDKey: "HPfimjRac1NUu1vIwNT5NW51BsVsdAWGMWrTTFcHIWM="
+        SUEnableAutomaticChecks: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.grau.mac

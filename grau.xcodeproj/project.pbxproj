@@ -25,16 +25,19 @@
 		73E99703900621CD60499DDE /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3773B175B56A631710DD28D /* PrimaryButton.swift */; };
 		75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C635470D794F17CEB27903B /* ErrorStateView.swift */; };
 		7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092CF365CA4C30B4DED1FD37 /* StorageBar.swift */; };
+		84D049D6C3A868BD5123D111 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 38135049169D35D8B30CDDD0 /* Sparkle */; };
 		932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */; };
 		9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */; };
 		93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */; };
 		96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839DBC1C2917DB3E916A3BB /* SettingsView.swift */; };
 		A7187379241005F719D14BF2 /* PreferencesKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68A56B27A5086F480717A44 /* PreferencesKeys.swift */; };
 		A740441052CB6CF2A54BCAD3 /* JunkCleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */; };
+		A856654F9DEB24CE9D5EBF10 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB658C5236E51B314B5435D /* TrashView.swift */; };
 		AAE1198B7ACBE85FDFF8FAB5 /* JunkCleanerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */; };
 		AAEB8D66695F4D1091A9D7B7 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF57B788A5A637D6877462 /* PermissionCoordinator.swift */; };
 		AB140A427DF53B25232ED45C /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */; };
 		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
+		C1F6E4065EE1F1AFDADBED2F /* TrashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E498C8615DD96573423C4270 /* TrashViewModel.swift */; };
 		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
 		F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */; };
 		F9E2ECE173F9227914B2258D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01BAF7D1E9F6717DB3B42324 /* Assets.xcassets */; };
@@ -66,6 +69,7 @@
 		8876E717308A63E4163433FF /* DuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicatesView.swift; sourceTree = "<group>"; };
 		89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerViewModel.swift; sourceTree = "<group>"; };
 		8A932159D5DF281913EF328D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		8CB658C5236E51B314B5435D /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
 		A3B801EEF5BB68749E896929 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = graucore; path = graucore; sourceTree = SOURCE_ROOT; };
 		A3BB8F4004008FEE12868F34 /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
 		A68A56B27A5086F480717A44 /* PreferencesKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesKeys.swift; sourceTree = "<group>"; };
@@ -77,6 +81,7 @@
 		C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		DF28F8808670ACD2427830E9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		E498C8615DD96573423C4270 /* TrashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashViewModel.swift; sourceTree = "<group>"; };
 		E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		E7B13EF7229DDAAF0784C0DA /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		F3773B175B56A631710DD28D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
@@ -88,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				31F15957E73824185D8B0E73 /* graucore in Frameworks */,
+				84D049D6C3A868BD5123D111 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +114,7 @@
 				832063B4282612E37C93783D /* Onboarding */,
 				3D8EF6E7F85606F1B7D28812 /* Permissions */,
 				7F92D4C79648C16ED50A0355 /* Settings */,
+				7FD9C1FA8B26B50975755EBF /* Trash */,
 				9C07CD228B0BEE741D3E0A53 /* Uninstaller */,
 			);
 			path = Features;
@@ -219,6 +226,15 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		7FD9C1FA8B26B50975755EBF /* Trash */ = {
+			isa = PBXGroup;
+			children = (
+				8CB658C5236E51B314B5435D /* TrashView.swift */,
+				E498C8615DD96573423C4270 /* TrashViewModel.swift */,
+			);
+			path = Trash;
+			sourceTree = "<group>";
+		};
 		832063B4282612E37C93783D /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +339,7 @@
 			name = grau;
 			packageProductDependencies = (
 				4EBFAAE07D91F3FD2E9146C2 /* graucore */,
+				38135049169D35D8B30CDDD0 /* Sparkle */,
 			);
 			productName = grau;
 			productReference = 781BCABAEBDFD44AB6C7B30A /* grau.app */;
@@ -353,6 +370,7 @@
 			mainGroup = 114789CD8B719C9369A682D6;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				DEC325B62A9AA6351A4BED85 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				0B1346B1C095534EF3B45FC9 /* XCLocalSwiftPackageReference "graucore" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -409,6 +427,8 @@
 				96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */,
 				932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */,
 				7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */,
+				A856654F9DEB24CE9D5EBF10 /* TrashView.swift in Sources */,
+				C1F6E4065EE1F1AFDADBED2F /* TrashViewModel.swift in Sources */,
 				69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */,
 				9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */,
 				3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */,
@@ -623,7 +643,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		DEC325B62A9AA6351A4BED85 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		38135049169D35D8B30CDDD0 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DEC325B62A9AA6351A4BED85 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		4EBFAAE07D91F3FD2E9146C2 /* graucore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = graucore;

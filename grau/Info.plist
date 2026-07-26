@@ -45,5 +45,11 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://lucianodiisouza.github.io/grau/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>HPfimjRac1NUu1vIwNT5NW51BsVsdAWGMWrTTFcHIWM=</string>
 </dict>
 </plist>
