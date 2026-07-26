@@ -127,7 +127,28 @@ the corresponding release.
 
 ## Phase 2 — Uninstaller (beta 2)
 
-_(filled in when Phase 2 lands)_
+### Uninstaller
+
+- [ ] Uninstaller tab shows a list of installed apps on the left.
+- [ ] Each app row shows name + version; a lock icon indicates
+      system apps (`com.apple.*`).
+- [ ] Selecting an app shows its residual data on the right.
+- [ ] Residual list shows: kind, path (truncated), size, "May
+      contain user data" pill for appSupport/cookies/containers.
+- [ ] Default selections: caches/logs/preferences etc. are checked;
+      containers and groupContainers are NOT.
+- [ ] System apps (e.g. Safari): uninstall button is disabled unless
+      Dev Mode is on in Settings.
+- [ ] Apps with `Contents/Resources/Uninstall.app` show a
+      "Has uninstaller" pill.
+- [ ] "Uninstall" opens a confirm sheet showing the original path.
+- [ ] "Uninstall" on the confirm sheet moves the app + selected
+      residuals to Trash, writes a manifest.
+- [ ] Success sheet shows the freed size and "Open Trash" / "Done".
+- [ ] `~/.grau/trash-manifests/<ts>-uninstall.json` is created.
+- [ ] Re-scan after uninstall removes the app from the list.
+- [ ] Running app detection: trying to uninstall a running app
+      shows an error alert.
 
 ## Phase 3 — Disk lens (beta 3)
 

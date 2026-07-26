@@ -6,11 +6,72 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 2 (Beta 2)
-- App uninstaller: list apps, find residuals, uninstall
-- Residual finder: prefs, caches, app support, logs, etc.
-- Per-app uninstall helper detection
-- Running-app detection
+### Planned for Phase 3 (Beta 3)
+- Disk lens: Top-N folders list with drill + context menu
+- (Real treemap deferred to v1.1)
+
+## [0.3.0-beta.2] — 2026-07-26
+
+Public beta. The second feature (app uninstaller) is end-to-end
+functional. Grau scans `/Applications`, `/Applications/Utilities`, and
+`~/Applications`, lists every user-installed app, shows its residual
+data in `~/Library` (preferences, caches, app support, logs, saved
+state, cookies, containers, group containers, launch agents), and
+lets the user pick which residuals to clean up alongside the app
+bundle itself. System apps (`com.apple.*`) are blocked unless the
+user enables Dev Mode in Settings.
+
+### graucore
+- **`Uninstaller/InstalledApp`** — struct (no `architecture` field
+  per the review). `isAppleSystemComponent` computed.
+- **`Uninstaller/BundleMetadata`** / `BundleMetadataLoader` —
+  defensive Info.plist parser; reads
+  `com.apple.security.application-groups`.
+- **`Uninstaller/AppScanner`** — `actor`; walks the standard
+  install dirs; skips `/System/Applications`; dedupes by bundle ID.
+- **`Uninstaller/ResidualKind`** — 9 kinds (NO `keychainEntries`
+  per the review). `mayContainUserData` + `defaultSelected`
+  per kind.
+- **`Uninstaller/Residual`** — struct.
+- **`Uninstaller/ResidualFinder`** — `actor`. Group containers
+  looked up via the app's actual `application-groups` entitlement
+  (not derived from bundle ID per the review).
+- **`Uninstaller/UninstallPlan`** / `Uninstaller` — build plan,
+  validate (`systemApp` / `appRunning` errors), execute via
+  `TrashMover` with kind `uninstall`.
+
+Test count: **81** tests, all green.
+
+### grau
+- **`Uninstaller/UninstallerViewModel`** — `Phase` enum; `scan`,
+  `selectApp`, `startUninstall`, `confirmUninstall`, `dismissCompleted`.
+- **`Uninstaller/UninstallerView`** — `HSplitView` (app list left,
+  detail right). Per-residual row with kind pill. Confirm sheet
+  with original path. Success sheet. System apps blocked (unless
+  Dev Mode is on).
+- **`DesignSystem/Components/DestructiveButton`** — filled
+  danger-tone button for destructive actions.
+
+### Documentation
+- `docs/MANUAL-TEST.md` updated with the full Phase 2 checklist.
+- `CHANGELOG.md` — this entry.
+
+### Build
+- `cd graucore && swift test` — 81/81 ✓
+- `xcodebuild -scheme grau -configuration Debug build` — ✓
+- `xcodebuild -scheme grau -configuration Release build` — ✓
+
+### Known limitations
+- Running-app detection uses `NSWorkspace.runningApplications` and
+  is best-effort. A malicious app could fork-and-exit fast enough
+  to avoid detection; this is acceptable for the use case.
+- Containers and group containers default to NOT selected in
+  the UI to prevent accidental loss of sandboxed data.
+
+[Unreleased]: # (HEAD)
+[0.1.0-alpha]: https://github.com/lucianodiisouza/grau/releases/tag/v0.1.0-alpha
+[0.2.0-beta.1]: https://github.com/lucianodiisouza/grau/releases/tag/v0.2.0-beta.1
+[0.3.0-beta.2]: https://github.com/lucianodiisouza/grau/releases/tag/v0.3.0-beta.2
 
 ## [0.2.0-beta.1] — 2026-07-26
 
