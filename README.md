@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.5.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center. Dashboard reads real data.
+**Status:** ✅ **v1.6.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center. Dashboard reads real data and shows recent scans.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
@@ -57,7 +57,7 @@ cd grau
 # Generate the Xcode project
 xcodegen generate
 
-# Run the graucore unit tests (172 tests)
+# Run the graucore unit tests (177 tests)
 cd graucore && swift test
 
 # Build the macOS app

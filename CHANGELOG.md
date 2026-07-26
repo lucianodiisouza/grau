@@ -6,12 +6,45 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 11 (1.6)
-- Configurable per-feature retention windows (e.g. how long
-  to keep trash manifests)
-- Auto-clean rules ("clean junk older than 7 days")
-- Export last scan as JSON
+### Planned for Phase 12 (1.7)
+- Configurable per-feature retention windows
+- Auto-clean rules
 - Per-rule notification cooldowns
+- Sparkle delta updates (smaller downloads for patch releases)
+
+## [1.6.0] — 2026-07-26
+
+Scan history + contributor tooling.
+
+### Highlights
+- 📜 **Recent scans on the Dashboard.** A new card lists
+  the last 5 cleans (capped at 10 in state.json) with
+  kind, total bytes, item count, and timestamp. Hidden
+  when the history is empty.
+- 🛠 **scripts/ci-verify.sh** runs the same checks CI does
+  (xcodegen + graucore swift test + xcodebuild Debug +
+  xcodebuild Release + privacy manifest sanity) so
+  contributors can verify locally before pushing.
+- `--release-only` flag skips the Debug build for a faster
+  local run.
+
+### graucore
+- **`FS/ManifestStore.swift`** — `StateFile` gains
+  `scanHistory: [LastScanSummary]` (capped at
+  `StateFile.maxHistoryEntries` = 10) and a pure
+  `appendingHistory(_:)` helper.
+- Test count: **177** (was 172). Five new tests cover
+  default empty history, head-insertion, max-entries trim,
+  non-mutation, and Codable round-trip with history.
+
+### grau
+- `JunkCleanerViewModel.confirmClean()` also writes the
+  new summary to `state.scanHistory` (in addition to
+  `lastJunkScan` / `lastClean`).
+- `DashboardViewModel` exposes `scanHistory`.
+- `DashboardView` shows a "Recent scans" card with up to
+  5 entries (kind pill, size, item count, timestamp).
+- New `scripts/ci-verify.sh`.
 
 ## [1.5.0] — 2026-07-26
 

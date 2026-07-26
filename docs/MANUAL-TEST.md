@@ -269,6 +269,28 @@ Dev Mode is hidden by default. Enable it via Settings → Developer
 
 _(filled in when Phase 6a lands)_
 
+## Phase 11 — Scan history + ci-verify (1.6)
+
+### Recent scans on the Dashboard
+
+- [ ] After running 2-3 cleans, the Dashboard shows a
+      "Recent scans" card with one row per clean.
+- [ ] Each row shows kind (Junk), size, item count, and
+      timestamp.
+- [ ] The card is hidden on a fresh install (no past
+      cleans).
+- [ ] The 11th+ oldest entry is dropped (cap = 10).
+
+### ci-verify.sh
+
+- [ ] `./scripts/ci-verify.sh` runs all 5 steps and
+      reports "All checks passed".
+- [ ] `./scripts/ci-verify.sh --release-only` skips the
+      Debug build and runs the rest.
+- [ ] Manually break the privacy manifest (delete one
+      `NSPrivacyAccessedAPIType` key) and confirm the
+      sanity check fails.
+
 ## Phase 10 — Dashboard refresh + treemap tier-2 labels (1.5)
 
 ### Dashboard reads real data
