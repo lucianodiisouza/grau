@@ -6,11 +6,146 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 12 (1.7)
-- Configurable per-feature retention windows
-- Auto-clean rules
-- Per-rule notification cooldowns
-- Sparkle delta updates (smaller downloads for patch releases)
+## [1.7.0] — 2026-07-26
+
+Automation, retention, and lighter updates. Grau now prunes its
+own history, runs user-defined auto-clean rules, and ships
+smaller patches.
+
+### Highlights
+- 🧹 **Configurable retention windows.** Three new settings
+  (notification log, trash manifests, scan history) with
+  per-kind steppers and a "Reset to default" button. 0 days
+  means "never expire". A new **Automation** sidebar item
+  shows the policy at a glance and has a "Run retention now"
+  button that prunes everything in one click.
+- ⚙️ **Auto-clean rules.** New `AutoCleanRule` model
+  (id, name, condition, action, enabled, cooldown). Four
+  condition kinds: trash size, junk size, disk usage, time of
+  day. Three action kinds: run retention, reindex trash, log
+  a summary. Two safe defaults ship pre-installed but disabled
+  — users have to opt in. The Automation tab has a "New rule"
+  sheet and a "Run rules now" button.
+- ⏱ **Per-rule notification cooldowns.** Each of Grau's three
+  alert rules (junk > 1 GB, disk > 90%, trash > 5 GB) can
+  now be configured with a custom cooldown (No cooldown / 1h /
+  6h / 12h / 1d default / 3d / 1w). The Settings → Notifications
+  tab has a picker per rule. The Notification Center view
+  shows a "Rule status" card with the current state
+  (Ready / Cooling down until X / Disabled).
+- 📦 **Sparkle delta updates.** `make-appcast.sh` now accepts
+  either a single DMG (legacy, no deltas) or a directory of
+  DMGs (deltas auto-generated between consecutive versions).
+  Running on a directory of 3 DMGs produces an appcast with
+  3 items and 2 delta-from entries. See
+  [docs/SPARKLE-DELTAS.md](./docs/SPARKLE-DELTAS.md) for the
+  full workflow.
+
+### graucore
+- **`Retention/RetentionPolicy`** — Codable struct mapping
+  `RetentionKind` to `RetentionWindow(days:)`. Defaults:
+  notificationLog 90d, trashManifest 30d, scanHistory 0d
+  (forever). `setting(_:)` / `clearing(_:)` return a new
+  policy (immutable value type).
+- **`Retention/RetentionPolicyStore`** — actor. Persists to
+  `~/.grau/retention-policy.json`. `read()` returns
+  `.default` when the file is missing.
+- **`Retention/RetentionEngine`** — actor. `apply(policy:now:)`
+  prunes notifications, manifests, and scan history. Returns
+  a `RetentionReport` (counts per kind + total).
+- **`AutoClean/AutoCleanRule`** — Codable struct with id,
+  name, `AutoCleanCondition` (4 kinds), `AutoCleanAction`
+  (3 kinds), enabled, cooldown seconds, created at, last
+  fired at. `canFire(now:)` respects cooldown.
+- **`AutoClean/AutoCleanStore`** — actor. `add/upsert/remove`
+  persist to `~/.grau/auto-clean.json`. Returns
+  `defaultRules` (2 disabled) when the file is missing.
+- **`AutoClean/AutoCleanEngine`** — actor. `evaluate(...)` is
+  pure. `execute(...)` runs actions via RetentionEngine and
+  NotificationLog. `runOnce(...)` updates `lastFiredAt` on
+  fired rules.
+- **`Notifications/NotificationCooldown`** — struct
+  (ruleID, seconds, clamped to 30d). `humanReadable`
+  produces "No cooldown" / "1 hour" / "3 days" etc.
+- **`Notifications/NotificationLog.replace(with:)`** — bulk
+  rewrite. Used by the retention engine. Empty input removes
+  the file.
+- `NotificationLog.record(...)` gains a `timestamp:`
+  parameter (default `Date()`). The retention engine uses
+  this to backdate test entries.
+- Test count: **222** (was 177). 45 new tests cover:
+  - RetentionPolicy: defaults, setting/clearing,
+    isForever, clamping, equality (10).
+  - RetentionEngine: pruneNotificationLog, pruneTrashManifests,
+    pruneScanHistory, apply with per-kind policy, store
+    round-trip (10).
+  - AutoCleanEngine: canFire, all 4 condition kinds, cooldown
+    respect, multiple rules, logSummary execution, codable
+    round-trips, default rules (17).
+  - NotificationCooldown: clamping, human-readable variants,
+    default seconds, key format, equality (8).
+
+### grau
+- **New sidebar item: Automation** (`wand.and.stars`). Sits
+  between Notifications and Settings. Hides nothing.
+- **`Features/Automation/AutomationView.swift`** — three
+  sections: header, "Last run" card, retention rows
+  (stepper 0–3650 days, "Reset" button), auto-clean rule
+  rows (toggle, name, "When X → Y", last-fired timestamp,
+  delete menu). "+ New rule" sheet covers all 4 condition
+  kinds and all 3 action kinds.
+- **`Features/Automation/AutomationViewModel.swift`** —
+  `@MainActor @Observable`. Reads/writes policy and rules
+  via the actors. `runRetentionNow()` and
+  `runAutoCleanNow()` capture a live gauge snapshot
+  (trash size, last junk scan, disk usage).
+- **`SettingsView` gains a "Notifications" tab** with a
+  per-rule cooldown picker and a "Cooling down until X"
+  line that appears when a rule is mid-cooldown.
+- **`NotificationCenterView` gains a "Rule status" card**
+  above the log. Shows Ready / Cooling down / Disabled
+  per rule.
+- `NotificationCoordinator` gains `cooldownSeconds(for:)`,
+  `setCooldownSeconds(_:for:)`, `canFire(_:now:)`,
+  `cooldownEndsAt(_:now:)`. `fire(...)` now early-returns
+  if `canFire(id)` is false (still records the value, so
+  threshold-crossing dedupe state is current).
+- `NotificationRuleID` gains `displayName`. About tab now
+  shows v1.7.0.
+- **`scripts/make-appcast.sh`** — accepts a directory of
+  DMGs and reports item + delta counts.
+- **`docs/SPARKLE-DELTAS.md`** — new doc covering the
+  delta workflow, hosting, and verification.
+
+### Files
+- New: `graucore/Sources/graucore/Retention/{RetentionPolicy,
+  RetentionPolicyStore, RetentionEngine}.swift`
+- New: `graucore/Sources/graucore/AutoClean/{AutoCleanRule,
+  AutoCleanStore, AutoCleanEngine}.swift`
+- New: `graucore/Sources/graucore/Notifications/NotificationCooldown.swift`
+- New: `graucore/Tests/graucoreTests/RetentionPolicyTests.swift`
+- New: `graucore/Tests/graucoreTests/RetentionEngineTests.swift`
+- New: `graucore/Tests/graucoreTests/AutoCleanEngineTests.swift`
+- New: `graucore/Tests/graucoreTests/NotificationCooldownTests.swift`
+- New: `grau/Features/Automation/{AutomationView,
+  AutomationViewModel}.swift`
+- New: `docs/SPARKLE-DELTAS.md`
+- Modified: `graucore/Sources/graucore/Notifications/NotificationLog.swift`
+  (added `replace(with:)`; `record(...)` gains `timestamp:`)
+- Modified: `grau/AppViewModel.swift` (new `automation`
+  sidebar case)
+- Modified: `grau/Features/MainWindow/MainWindowView.swift`
+  (routes to `AutomationView`)
+- Modified: `grau/Features/Notifications/NotificationCoordinator.swift`
+  (cooldown API; `displayName` on rule IDs)
+- Modified: `grau/Features/Notifications/NotificationCenterView.swift`
+  (Rule status card)
+- Modified: `grau/Features/Settings/SettingsView.swift`
+  (Notifications tab)
+- Modified: `scripts/make-appcast.sh` (directory mode +
+  delta count report)
+- Modified: `grau/Info.plist`, `project.yml`
+  (CFBundleShortVersionString → 1.7.0, MARKETING_VERSION → 1.7.0)
 
 ## [1.6.0] — 2026-07-26
 

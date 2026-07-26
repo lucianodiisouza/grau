@@ -425,3 +425,91 @@ _(filled in when Phase 6a lands)_
 - [ ] `~/.grau/trash-manifests/<timestamp>-<kind>.json` files
       are still readable after restore (we don't delete the
       manifest on success — that lets the user retry).
+
+## Phase 12 — Automation + retention + cooldowns (1.7)
+
+### Retention windows
+
+- [ ] Open the **Automation** sidebar item. The retention section
+      shows three rows: Notification log (90d default), Trash
+      manifests (30d default), Scan history (Never, default).
+- [ ] Drag the Notification log stepper from 90 to 7. The label
+      updates to "Older than 7 days". Quit and relaunch the app.
+      The stepper still reads 7 (persisted to
+      `~/.grau/retention-policy.json`).
+- [ ] Click "Reset" on a row. The value snaps back to the
+      default. The window entry disappears from the JSON file
+      (reverting to the default).
+- [ ] Click "Run retention now" with the default policy. With a
+      fresh install (no old data) the "Last run" card does NOT
+      appear (no entries were pruned). After intentionally
+      creating some old data (see below), the card shows
+      "Pruned N entries: …".
+- [ ] Manually create an old entry: drop a file in
+      `~/.grau/trash-manifests/` with a JSON `timestamp` from
+      100 days ago. Click "Run retention now". The file is
+      removed; the report shows "1 manifest" pruned.
+- [ ] Setting any window to 0 days flips the label to
+      "Never expire". A second "Run retention now" does NOT
+      prune that kind's data.
+
+### Auto-clean rules
+
+- [ ] The Automation tab shows two disabled rules by default:
+      "Prune old manifests weekly" and "Reindex trash when
+      large".
+- [ ] Click "+ New rule". The editor sheet appears with name
+      field, condition picker (Trash / Junk / Disk / Time),
+      threshold stepper, and action picker.
+- [ ] Create a rule "Test rule" with Trash > 1 GB, action
+      "Log a summary". Save. The rule appears in the list as
+      Disabled (toggle is off). Toggle it on. The "Last fired
+      at" line is hidden.
+- [ ] Click "Run rules now". With Trash < 1 GB the rule does
+      NOT fire. Manually backdate `lastFiredAt` to NULL (or use
+      a script to set the trash to > 1 GB), click "Run rules
+      now" again. A "Auto-clean ran" card appears with the
+      rule name and "Logged summary" subtitle.
+- [ ] Toggle the rule off. Click "Run rules now" again. The
+      rule does NOT fire (the toggle is honored).
+- [ ] Click the menu → Delete on a rule. The rule is removed
+      and the JSON file updates.
+
+### Per-rule notification cooldowns
+
+- [ ] Open Settings → Notifications. The three rules are listed
+      with their default cooldown (1 day) and a picker.
+- [ ] Change "Junk > 1 GB" from "1 day" to "1 hour". The
+      right-side label updates to "1 hour". Quit and relaunch.
+      The picker still shows "1 hour" (persisted in
+      UserDefaults `grau.rule.junk.gt1gb.cooldown`).
+- [ ] Open the Notifications sidebar item. The "Rule status"
+      card shows "Junk > 1 GB — Ready".
+- [ ] Run a junk scan with > 1 GB of junk. A notification
+      fires. Open the Notification Center. The "Rule status"
+      card now shows "Cooling down until 18:47" (the time
+      when the cooldown expires). The "Last run" log entry
+      also appears.
+- [ ] Trigger the same rule again within the hour. NO
+      notification fires. The "Rule status" card still shows
+      "Cooling down until…". After the cooldown expires, the
+      next trigger DOES fire.
+
+### Sparkle delta updates
+
+- [ ] Stage three DMGs: 1.6.0, 1.6.1, 1.7.0 in
+      `dist/dmgs/`. Run `./scripts/make-appcast.sh dist/dmgs/`.
+      The script reports `Items: 3, delta updates: 2`.
+- [ ] Open `dist/appcast.xml`. Each `<item>` from 1.6.1 and
+      1.7.0 has a `sparkle:deltaFrom="Grau-1.6.0.dmg"` /
+      `sparkle:deltaFrom="Grau-1.6.1.dmg"` attribute. The
+      1.6.0 entry has no delta.
+- [ ] Each delta entry is a separate `<enclosure>` with its
+      own `url`, `length`, and `sparkle:edSignature`.
+- [ ] Manually verify by inspecting the file size of the
+      delta against the full DMG: the delta is smaller
+      (typically 10–30% of the DMG size).
+- [ ] Run the single-DMG mode: `./scripts/make-appcast.sh
+      dist/Grau-1.7.0.dmg`. The output reports
+      `Items: 1, delta updates: 0` (no deltas with one
+      DMG).

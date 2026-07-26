@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.6.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center. Dashboard reads real data and shows recent scans.
+**Status:** ✅ **v1.7.0** (stable). All five features functional. Self-update via Sparkle with delta updates. Homebrew Cask formula shipped. Per-file parallel hashing in the duplicates scanner. Disk Lens has a treemap view. Duplicates scan is cancellable. Trash view has filters. In-app Notification Center. Dashboard reads real data and shows recent scans. **New in 1.7:** Configurable retention windows, user-defined auto-clean rules, per-rule notification cooldowns.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
@@ -15,7 +15,11 @@
 - 🪞 **Duplicates finder** — find byte-identical files anywhere. 3-phase pipeline (size → partial hash → full SHA-256). Cancellable mid-scan. Defaults to keeping the oldest copy.
 - 🛠 **Dev mode** — track `node_modules`, 16 package manager caches, Docker, iOS Simulators, Xcode DerivedData, and archives. Hidden behind a Settings toggle.
 - ↩️ **Trash restore** — every clean writes a JSON manifest. The in-app Trash view shows past operations and lets you restore a whole batch in one click.
-- 🔔 **Notification Center** — every alert Grau fires is also persisted to `~/.grau/notification-log.json`. The in-app Notifications view shows the full history.
+- 🔔 **Notification Center** — every alert Grau fires is also persisted to `~/.grau/notification-log.json`. The in-app Notifications view shows the full history with per-rule cooldown status.
+- 🧹 **Retention windows** — configure how long Grau keeps notification log entries, trash manifests, and scan history. Defaults: 90d / 30d / forever. New in 1.7.
+- ⚙️ **Auto-clean rules** — user-defined "if X then Y" automations. Four condition kinds (trash size, junk size, disk usage, time of day) and three action kinds. New in 1.7.
+- ⏱ **Per-rule notification cooldowns** — each alert rule can be configured with a custom minimum gap between fires (no cooldown / 1h / 6h / 12h / 1d / 3d / 1w). New in 1.7.
+- 📦 **Sparkle delta updates** — patch releases download a small diff, not the full DMG. New in 1.7.
 
 ## First principles
 
@@ -108,6 +112,7 @@ grau/
 - [docs/HANDOFF.md](./docs/HANDOFF.md) — implementation guide for each task
 - [docs/TASKS.md](./docs/TASKS.md) — the project tracker
 - [docs/REVIEW.md](./docs/REVIEW.md) — the staff-eng review that corrected the plan
+- [docs/SPARKLE-DELTAS.md](./docs/SPARKLE-DELTAS.md) — Sparkle delta update workflow (v1.7)
 - [docs/MANUAL-TEST.md](./docs/MANUAL-TEST.md) — the pre-release checklist
 - [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) — known issues + fixes
 
