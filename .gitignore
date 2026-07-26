@@ -59,3 +59,8 @@ fastlane/test_output
 *.bak
 *.tmp
 *.orig
+
+# Build outputs (project-local)
+build/
+dist/
+xcuserdata/
