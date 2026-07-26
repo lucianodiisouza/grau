@@ -23,6 +23,15 @@ public enum NotificationRuleID: String, CaseIterable {
         case .trashFull5GB: return false
         }
     }
+
+    /// User-facing label used in the Settings → Notifications tab.
+    public var displayName: String {
+        switch self {
+        case .junkGt1GB:    "Junk > 1 GB"
+        case .diskFull90:   "Disk > 90%"
+        case .trashFull5GB: "Trash > 5 GB"
+        }
+    }
 }
 
 @MainActor
@@ -154,6 +163,53 @@ final class NotificationCoordinator {
         UserDefaults.standard.set(Date(), forKey: key)
     }
 
+    private func lastFired(for id: NotificationRuleID) -> Date? {
+        let key = "grau.rule.\(id.rawValue).lastFiredAt"
+        return UserDefaults.standard.object(forKey: key) as? Date
+    }
+
+    /// The cooldown (in seconds) for a given rule. Reads from
+    /// UserDefaults; falls back to the v1.7 default (24h) if the
+    /// user hasn't customised it. 0 means "no cooldown" (fire on
+    /// every threshold transition).
+    public func cooldownSeconds(for id: NotificationRuleID) -> TimeInterval {
+        let key = NotificationCooldownDefaults.userDefaultsKey(for: id.rawValue)
+        if UserDefaults.standard.object(forKey: key) == nil {
+            return NotificationCooldownDefaults.defaultSeconds(for: id.rawValue)
+        }
+        let stored = UserDefaults.standard.double(forKey: key)
+        return NotificationCooldown(ruleID: id.rawValue, seconds: stored).seconds
+    }
+
+    /// Sets the cooldown (in seconds) for a given rule. Pass 0 to
+    /// disable cooldown for that rule. Used by the Settings UI.
+    public func setCooldownSeconds(_ seconds: TimeInterval, for id: NotificationRuleID) {
+        let clamped = NotificationCooldown(ruleID: id.rawValue, seconds: seconds).seconds
+        let key = NotificationCooldownDefaults.userDefaultsKey(for: id.rawValue)
+        UserDefaults.standard.set(clamped, forKey: key)
+    }
+
+    /// Returns true if a rule can fire right now. False if the
+    /// rule's last fire was within the configured cooldown.
+    public func canFire(_ id: NotificationRuleID, now: Date = Date()) -> Bool {
+        guard isEnabled(id) else { return false }
+        let cooldown = cooldownSeconds(for: id)
+        if cooldown <= 0 { return true }
+        guard let last = lastFired(for: id) else { return true }
+        return now.timeIntervalSince(last) >= cooldown
+    }
+
+    /// Returns the date at which the cooldown expires, or nil if
+    /// the rule is not currently in cooldown. Used by the
+    /// Notification Center UI to show "Cooling down until X".
+    public func cooldownEndsAt(_ id: NotificationRuleID, now: Date = Date()) -> Date? {
+        let cooldown = cooldownSeconds(for: id)
+        if cooldown <= 0 { return nil }
+        guard let last = lastFired(for: id) else { return nil }
+        let end = last.addingTimeInterval(cooldown)
+        return end > now ? end : nil
+    }
+
     // MARK: - Firing
 
     private func fire(
@@ -162,6 +218,14 @@ final class NotificationCoordinator {
         body: String,
         value: Double
     ) async {
+        // Per-rule cooldown gate. If we're still within the
+        // cooldown window of the last fire, we record the value
+        // (so the threshold-crossing dedupe state is current) but
+        // do NOT fire a system notification or append to the log.
+        guard canFire(id) else {
+            recordValue(id, value: value)
+            return
+        }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body

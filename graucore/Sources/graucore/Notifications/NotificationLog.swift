@@ -65,11 +65,17 @@ public actor NotificationLog {
     public func record(
         ruleID: String,
         title: String,
-        body: String
+        body: String,
+        timestamp: Date = Date()
     ) async {
         var entries = await read()
         entries.insert(
-            NotificationLogEntry(ruleID: ruleID, title: title, body: body),
+            NotificationLogEntry(
+                timestamp: timestamp,
+                ruleID: ruleID,
+                title: title,
+                body: body
+            ),
             at: 0
         )
         if entries.count > Self.maxEntries {
@@ -89,5 +95,26 @@ public actor NotificationLog {
     public func clear() async {
         let url = Self.logFile
         try? FileManager.default.removeItem(at: url)
+    }
+
+    /// Replaces the entire log with `entries`, sorted newest first
+    /// and trimmed to `maxEntries`. Used by the retention engine to
+    /// prune old entries. No-op if the input is empty (the file is
+    /// removed so we don't leave a stale `[]` on disk).
+    public func replace(with entries: [NotificationLogEntry]) async {
+        let url = Self.logFile
+        if entries.isEmpty {
+            try? FileManager.default.removeItem(at: url)
+            return
+        }
+        let trimmed = Array(entries.prefix(Self.maxEntries))
+            .sorted { $0.timestamp > $1.timestamp }
+        try? ManifestStore.ensureGrauDirectory()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? encoder.encode(trimmed) {
+            try? data.write(to: url, options: .atomic)
+        }
     }
 }
