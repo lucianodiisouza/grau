@@ -64,6 +64,15 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
+      - name: Downgrade project format for Xcode 15.4
+        run: |
+          # xcodegen 2.42+ emits project format 77 (Xcode 16+).
+          # The macos-14 runner ships Xcode 15.4 which only
+          # supports up to format 56. Force the project to
+          # format 56 so it opens in both old and new Xcode.
+          sed -i.bak 's/objectVersion = [0-9]*;/objectVersion = 56;/' grau.xcodeproj/project.pbxproj
+          rm -f grau.xcodeproj/project.pbxproj.bak
+
       - name: Build app (Debug)
         run: |
           xcodebuild \
@@ -98,6 +107,15 @@ jobs:
 
       - name: Generate Xcode project
         run: xcodegen generate
+
+      - name: Downgrade project format for Xcode 15.4
+        run: |
+          # xcodegen 2.42+ emits project format 77 (Xcode 16+).
+          # The macos-14 runner ships Xcode 15.4 which only
+          # supports up to format 56. Force the project to
+          # format 56 so it opens in both old and new Xcode.
+          sed -i.bak 's/objectVersion = [0-9]*;/objectVersion = 56;/' grau.xcodeproj/project.pbxproj
+          rm -f grau.xcodeproj/project.pbxproj.bak
 
       - name: Build app (Release)
         run: |
