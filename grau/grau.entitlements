@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+      Grau is NOT sandboxed. We need to:
+        - read arbitrary paths under ~/Library, /Library, /private/var/log
+        - spawn docker and other CLIs as subprocesses
+        - write to the user's Trash via FileManager.trashItem
+
+      Hardened runtime is on for notarization (see HANDOFF.md § 0.2).
+      See docs/PERMISSIONS.md for the full TCC story.
+    -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+</dict>
+</plist>
