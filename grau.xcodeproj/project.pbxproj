@@ -14,6 +14,7 @@
 		2C9ACF9A889E799C800EE7F8 /* MenuBarState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB62F4D0CEF3A9222022EA11 /* MenuBarState.swift */; };
 		31F15957E73824185D8B0E73 /* graucore in Frameworks */ = {isa = PBXBuildFile; productRef = 4EBFAAE07D91F3FD2E9146C2 /* graucore */; };
 		352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876E717308A63E4163433FF /* DuplicatesView.swift */; };
+		39EBF72304BC2C25478C8C17 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 444B34B8B2B4A85E15DC8900 /* PrivacyInfo.xcprivacy */; };
 		3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */; };
 		54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B13EF7229DDAAF0784C0DA /* CardView.swift */; };
 		5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */; };
@@ -36,12 +37,14 @@
 		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
 		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
 		F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */; };
+		F9E2ECE173F9227914B2258D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01BAF7D1E9F6717DB3B42324 /* Assets.xcassets */; };
 		FA9E4E31716F6F0F636842F2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */; };
 		FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		01378AC795CC46D7C1B99EA3 /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		01BAF7D1E9F6717DB3B42324 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		04E04FDBC0E75675723F7083 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; path = graucore; sourceTree = SOURCE_ROOT; };
 		0761430E8BC47EFFC7FAA3D4 /* grau.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = grau.entitlements; sourceTree = "<group>"; };
 		092CF365CA4C30B4DED1FD37 /* StorageBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageBar.swift; sourceTree = "<group>"; };
@@ -51,6 +54,7 @@
 		281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCoordinator.swift; sourceTree = "<group>"; };
 		3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunkCleanerViewModel.swift; sourceTree = "<group>"; };
 		3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionPrimerView.swift; sourceTree = "<group>"; };
+		444B34B8B2B4A85E15DC8900 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		47D0B95B57C92443A397A6E8 /* DiskLensView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskLensView.swift; sourceTree = "<group>"; };
 		4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = GrauColors.xcassets; sourceTree = "<group>"; };
 		4F631A3E70A647C19987FDDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -134,9 +138,11 @@
 				0D9042A0619E127E0D117AEA /* Features */,
 				2DD271A962316C5CE6774371 /* Persistence */,
 				E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */,
+				01BAF7D1E9F6717DB3B42324 /* Assets.xcassets */,
 				0761430E8BC47EFFC7FAA3D4 /* grau.entitlements */,
 				73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */,
 				4F631A3E70A647C19987FDDB /* Info.plist */,
+				444B34B8B2B4A85E15DC8900 /* PrivacyInfo.xcprivacy */,
 			);
 			path = grau;
 			sourceTree = "<group>";
@@ -364,7 +370,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9E2ECE173F9227914B2258D /* Assets.xcassets in Resources */,
 				F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */,
+				39EBF72304BC2C25478C8C17 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,7 +503,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
@@ -579,7 +587,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
