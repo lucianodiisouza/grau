@@ -41,7 +41,7 @@ the corresponding release.
 - [ ] Sidebar selection switches the detail view.
 - [ ] Dark mode: `defaults write -g AppleInterfaceStyle Dark` — colors
       flip correctly. Reset with `Light`.
-- [ ] `cd graucore && swift test` — 21 placeholder tests pass.
+- [ ] `cd graucore && swift test` — placeholder tests pass.
 - [ ] `xcodebuild -scheme grau -configuration Debug build` —
       succeeds without warnings.
 - [ ] `xcodebuild -scheme grau -configuration Release build` —
@@ -50,7 +50,80 @@ the corresponding release.
 
 ## Phase 1 — Junk cleaner (beta 1)
 
-_(filled in when Phase 1 lands)_
+### Onboarding
+
+- [ ] On first launch (no `grau.onboarded` flag in UserDefaults),
+      the Onboarding view shows (not the dashboard).
+- [ ] Onboarding "Continue" button advances through 3 screens.
+- [ ] "Skip" or "Get started" sets `grau.onboarded = true` and
+      shows the dashboard on next launch.
+
+### FDA primer (after onboarding or when FDA is needed)
+
+- [ ] Tapping "Open System Settings" opens the Privacy pane.
+- [ ] After granting FDA, the primer auto-detects within 10s and
+      shows the "All set" state.
+- [ ] If the user does not grant, the "Still waiting?" state
+      remains visible and the "Open System Settings" button is
+      available to retry.
+
+### Clean tab
+
+- [ ] Auto-scans on first appearance of the Clean tab.
+- [ ] All 5 categories appear with checkboxes.
+- [ ] User Cache, System Cache, and Logs default to selected.
+- [ ] Old Downloads and iOS Backups default to NOT selected.
+- [ ] System Cache and Logs show "Permission required" pill when
+      FDA is not granted, and their rows are disabled.
+- [ ] Categories that are userCaution show an "Opt-in" pill
+      (yellow).
+- [ ] Categories that are safe show a "Safe" pill (green).
+- [ ] Each row shows the size in human-readable format.
+- [ ] Bottom bar: "X selected, Y GB to free" with a "Clean Selected"
+      button.
+- [ ] "Clean Selected" is disabled when nothing is selected or
+      total size is 0.
+- [ ] Clicking "Clean Selected" opens a confirm sheet.
+- [ ] Confirm sheet shows "X categories, Y GB" and the userCaution
+      warning when applicable.
+- [ ] "Move to Trash" on the confirm sheet moves files and
+      shows a success sheet.
+- [ ] Success sheet shows "Freed X GB, N items moved" with
+      "Open Trash" and "Done" buttons.
+- [ ] `~/.grau/trash-manifests/<ts>-junk.json` is created.
+- [ ] Files are present in `~/.Trash` (verifiable in Finder).
+
+### Menu bar
+
+- [ ] Menu bar icon is present.
+- [ ] Clicking the menu bar icon opens a 320pt popover.
+- [ ] Popover shows: storage bar, "X free", trash row ("X items,
+      Y MB" or "Empty"), "Open Grau" / "Empty Trash" buttons,
+      version footer.
+- [ ] Live updates every 30s.
+
+### Settings
+
+- [ ] "Privacy" tab shows FDA status and "Open System Settings"
+      + "Re-check" buttons.
+- [ ] "Developer" tab has "Show developer features" toggle
+      (default off) and "Old downloads threshold" stepper.
+- [ ] "About" tab shows version and tagline.
+
+### Persistence
+
+- [ ] `~/.grau/state.json` is created after the first scan
+      or clean.
+- [ ] `~/.grau/size-cache.json` is created during scanning.
+- [ ] Quit and relaunch: cached scan state restores, no rescan
+      needed.
+
+### Performance
+
+- [ ] First junk scan completes within 10s on a Mac with 200 GB
+      free, 100 apps.
+- [ ] Subsequent scan (after SizeCache populated) completes in
+      under 2s.
 
 ## Phase 2 — Uninstaller (beta 2)
 

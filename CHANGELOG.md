@@ -6,14 +6,98 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 1 (Beta 1)
-- Junk cleaner (5 categories): User Cache, System Cache, Logs,
-  Old Downloads, iOS Backups
-- Full Disk Access onboarding
-- Menu bar popover with storage + trash state
-- Smart notifications (state-transition dedupe)
-- Trash manifests (`~/.grau/trash-manifests/*.json`)
-- SizeCache for < 2s subsequent scans
+### Planned for Phase 2 (Beta 2)
+- App uninstaller: list apps, find residuals, uninstall
+- Residual finder: prefs, caches, app support, logs, etc.
+- Per-app uninstall helper detection
+- Running-app detection
+
+## [0.2.0-beta.1] — 2026-07-26
+
+Public beta. The first feature (junk cleaner) is end-to-end functional.
+The app reads caches, logs, downloads, and iOS backups; lets the user
+select what to clean; moves the items to the Trash with manifests;
+and persists a SizeCache for sub-2s subsequent scans.
+
+### graucore (logic)
+- **`Primitives/ByteSize`** — Int64-backed size with human-readable
+  and compact labels; `+` and `+=` operators; `ExpressibleByIntegerLiteral`.
+- **`FS/FileSystemScanner`** — `struct`, AsyncStream walker with
+  cancellation, pluggable `PathExclusionsProvider`.
+- **`FS/DirectorySizer`** — `struct`, parallel size with hardlink
+  dedupe inline (no separate `HardlinkChecker` file).
+- **`FS/PathExclusions`** — standard exclusion set (audited
+  2026-07-26), apple-component matcher.
+- **`FS/TrashMover`** — the only module that performs destructive IO;
+  uses `FileManager.trashItem` (not `NSWorkspace.dispose`).
+- **`FS/ManifestStore`** — JSON read/write for `~/.grau/state.json`
+  and `size-cache.json`.
+- **`Permissions/PermissionChecker`** — `actor` with FDA heuristic
+  probe of `/Library/Application Support/com.apple.TCC`.
+- **`Volume/VolumeInfo`** / **`VolumeMonitor`** — uses
+  `FileManager.mountedVolumeURLs(...)` (NOT `/Volumes` walk).
+- **`Volume/TrashInfo`** / **`TrashInfoReader`** — symlink-resolving
+  cap-10k walk.
+- **`Junk/JunkCategory`** — 5 categories per the review.
+- **`Junk/JunkDefinition`** / **`JunkDefinitions.standard`** — 5
+  definitions, 3 default-on / 2 default-off.
+- **`Junk/JunkResult`** / **`JunkItem`** — scan output types.
+- **`Junk/SizeCache`** — mtime-keyed cache; sub-2s subsequent scans.
+- **`Junk/JunkScanner`** — `actor` with FDA-aware skip + cache
+  integration.
+- **`Junk/JunkCleaner`** — `struct`, calls `TrashMover` with the
+  selected results.
+
+Test count: **70** tests, all green.
+
+### grau (app)
+- **`AppViewModel`** — top-level `@MainActor @Observable` with
+  `hasOnboarded`, `devModeEnabled`, `downloadsThresholdDays` (all
+  in UserDefaults).
+- **`grauApp`** — three scenes (MenuBarExtra, main Window,
+  Settings Window); on first launch shows Onboarding instead of
+  dashboard.
+- **Clean tab** (`JunkCleanerView` + `JunkCleanerViewModel`) — 5
+  category rows with toggles, confirm sheet, success sheet,
+  manual refresh.
+- **Onboarding** (`OnboardingView`) — 3-screen first-launch tour.
+- **FDA primer** (`PermissionPrimerView` +
+  `PermissionCoordinator`) — 3-step primer with polling re-check.
+- **Menu bar** (`MenuBarContentView` + `MenuBarState`) — 320pt
+  popover with storage, trash, quick actions, version.
+- **Settings** (`SettingsView`) — Privacy / Developer / About tabs.
+- **Notifications** (`NotificationCoordinator`) — 3 rules
+  (`junk.gt1gb`, `disk.full.90`, `trash.full.5gb`) with
+  state-transition dedupe per the review.
+
+### Documentation
+- `docs/MANUAL-TEST.md` updated with the full Phase 1 checklist.
+- `docs/REVIEW.md` corrections applied throughout (see Reviewer's
+  list of B1–B8 and S1–S13).
+- `docs/PATH-AUDIT-2026-07-26.md` — see audit results.
+
+### Build
+- `cd graucore && swift test` — 70/70 ✓
+- `xcodebuild -scheme grau -configuration Debug build` — ✓
+- `xcodebuild -scheme grau -configuration Release build` — ✓
+- App bundle: `LSUIElement = true`, bundle ID `app.grau.mac`,
+  min macOS 14.0
+- App launches and runs (no Dock icon, menu bar item appears).
+
+### Known limitations
+- The menu bar icon is the default `circle.fill` (no custom
+  monogram yet — see Phase 6a).
+- Notifications require the user to grant authorization on
+  first launch; the request is sent but the in-app toggle
+  for per-rule enable/disable is deferred to v1.1.
+- NotificationCoordinator is instantiated at app level but
+  not auto-started; that lands in v1.1 with the 6h background
+  tick lifecycle (we don't want to background-tick a menu-bar
+  app that hasn't been launched yet).
+
+[Unreleased]: # (HEAD)
+[0.1.0-alpha]: https://github.com/lucianodiisouza/grau/releases/tag/v0.1.0-alpha
+[0.2.0-beta.1]: https://github.com/lucianodiisouza/grau/releases/tag/v0.2.0-beta.1
 
 ## [0.1.0-alpha] — 2026-07-26
 
