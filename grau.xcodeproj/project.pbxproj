@@ -24,12 +24,14 @@
 		75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C635470D794F17CEB27903B /* ErrorStateView.swift */; };
 		7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092CF365CA4C30B4DED1FD37 /* StorageBar.swift */; };
 		932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */; };
+		9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */; };
 		93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */; };
 		96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839DBC1C2917DB3E916A3BB /* SettingsView.swift */; };
 		A7187379241005F719D14BF2 /* PreferencesKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68A56B27A5086F480717A44 /* PreferencesKeys.swift */; };
 		A740441052CB6CF2A54BCAD3 /* JunkCleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */; };
 		AAE1198B7ACBE85FDFF8FAB5 /* JunkCleanerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */; };
 		AAEB8D66695F4D1091A9D7B7 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF57B788A5A637D6877462 /* PermissionCoordinator.swift */; };
+		AB140A427DF53B25232ED45C /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */; };
 		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
 		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
 		F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */; };
@@ -56,6 +58,7 @@
 		73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = grauApp.swift; sourceTree = "<group>"; };
 		781BCABAEBDFD44AB6C7B30A /* grau.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = grau.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8876E717308A63E4163433FF /* DuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicatesView.swift; sourceTree = "<group>"; };
+		89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerViewModel.swift; sourceTree = "<group>"; };
 		8A932159D5DF281913EF328D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		A3B801EEF5BB68749E896929 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = graucore; path = graucore; sourceTree = SOURCE_ROOT; };
 		A3BB8F4004008FEE12868F34 /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
@@ -68,6 +71,7 @@
 		C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		DF28F8808670ACD2427830E9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		E3FA33CC5B8FDF8CDBB7A929 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		E7B13EF7229DDAAF0784C0DA /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		F3773B175B56A631710DD28D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -172,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				E7B13EF7229DDAAF0784C0DA /* CardView.swift */,
+				E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */,
 				8A932159D5DF281913EF328D /* EmptyStateView.swift */,
 				6C635470D794F17CEB27903B /* ErrorStateView.swift */,
 				C295641283A897C9FB3DE833 /* Pill.swift */,
@@ -234,6 +239,7 @@
 			isa = PBXGroup;
 			children = (
 				A3BB8F4004008FEE12868F34 /* UninstallerView.swift */,
+				89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */,
 			);
 			path = Uninstaller;
 			sourceTree = "<group>";
@@ -369,6 +375,7 @@
 				FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */,
 				54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */,
 				BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */,
+				AB140A427DF53B25232ED45C /* DestructiveButton.swift in Sources */,
 				5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */,
 				D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */,
 				352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */,
@@ -391,6 +398,7 @@
 				932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */,
 				7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */,
 				69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */,
+				9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */,
 				3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
