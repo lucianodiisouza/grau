@@ -14,7 +14,14 @@ import SwiftUI
 import graucore
 
 struct TrashView: View {
-    @State private var viewModel = TrashViewModel()
+    @State private var viewModel: TrashViewModel
+
+    init() {
+        // TrashViewModel is @MainActor — construct in the struct's
+        // init (which is implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: TrashViewModel())
+    }
 
     var body: some View {
         VStack(spacing: 0) {
