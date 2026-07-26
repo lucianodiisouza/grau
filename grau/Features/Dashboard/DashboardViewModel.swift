@@ -23,6 +23,7 @@ final class DashboardViewModel {
     private(set) var trashSize: ByteSize = .zero
     private(set) var lastJunkScan: LastScanSummary?
     private(set) var lastClean: LastScanSummary?
+    private(set) var scanHistory: [LastScanSummary] = []
     private(set) var isLoading: Bool = false
 
     private let volumeMonitor: VolumeMonitor
@@ -56,10 +57,11 @@ final class DashboardViewModel {
         trashSize = trash.size
         trashItemCount = trash.itemCount
 
-        // State file: last junk scan + last clean.
+        // State file: last junk scan + last clean + history.
         if let state = try? manifestStore.read(StateFile.self, from: ManifestStore.stateFile) {
             lastJunkScan = state.lastJunkScan
             lastClean = state.lastClean
+            scanHistory = state.scanHistory
         }
     }
 

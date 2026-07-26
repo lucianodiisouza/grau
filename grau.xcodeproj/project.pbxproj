@@ -16,6 +16,7 @@
 		352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876E717308A63E4163433FF /* DuplicatesView.swift */; };
 		39EBF72304BC2C25478C8C17 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 444B34B8B2B4A85E15DC8900 /* PrivacyInfo.xcprivacy */; };
 		3A36F6AF94967AB70C632BF9 /* grauApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */; };
+		462C4F3DD290FD3784500BE7 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A312BFF381A661E940AA59C0 /* DashboardViewModel.swift */; };
 		54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B13EF7229DDAAF0784C0DA /* CardView.swift */; };
 		5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECDE79DDD0DDC04C6EA8292 /* DevModeView.swift */; };
 		69398F4215A3210616A454A6 /* UninstallerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BB8F4004008FEE12868F34 /* UninstallerView.swift */; };
@@ -75,6 +76,7 @@
 		89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerViewModel.swift; sourceTree = "<group>"; };
 		8A932159D5DF281913EF328D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		8CB658C5236E51B314B5435D /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
+		A312BFF381A661E940AA59C0 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		A3B801EEF5BB68749E896929 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = graucore; path = graucore; sourceTree = SOURCE_ROOT; };
 		A3BB8F4004008FEE12868F34 /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
 		A68A56B27A5086F480717A44 /* PreferencesKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesKeys.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				DF28F8808670ACD2427830E9 /* DashboardView.swift */,
+				A312BFF381A661E940AA59C0 /* DashboardViewModel.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 				FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */,
 				54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */,
 				BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */,
+				462C4F3DD290FD3784500BE7 /* DashboardViewModel.swift in Sources */,
 				AB140A427DF53B25232ED45C /* DestructiveButton.swift in Sources */,
 				5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */,
 				247BF2DD75411253D5A42674 /* DevModeViewModel.swift in Sources */,
@@ -535,7 +539,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
@@ -619,7 +623,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};

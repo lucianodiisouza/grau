@@ -27,6 +27,9 @@ struct DashboardView: View {
                         .frame(maxWidth: .infinity)
                 }
                 quickActions
+                if !viewModel.scanHistory.isEmpty {
+                    recentScansCard
+                }
             }
             .padding(Spacing.xxl)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -201,6 +204,49 @@ struct DashboardView: View {
         .buttonStyle(.plain)
         .disabled(disabled)
         .opacity(disabled ? 0.4 : 1.0)
+    }
+
+    @ViewBuilder
+    private var recentScansCard: some View {
+        CardView {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                HStack {
+                    Text("Recent scans")
+                        .font(.headline)
+                    Spacer()
+                    Text("Last \(viewModel.scanHistory.count) of \(StateFile.maxHistoryEntries) max")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+                ForEach(Array(viewModel.scanHistory.prefix(5).enumerated()), id: \.offset) { _, summary in
+                    HStack {
+                        Pill(humanLabel(for: summary.kind), tone: .info)
+                        Text(ByteSize(bytes: summary.totalBytes).humanReadable)
+                            .font(.callout)
+                        Text("·")
+                            .foregroundStyle(.tertiary)
+                        Text("\(summary.itemCount) items")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(summary.finishedAt.formatted(date: .abbreviated, time: .shortened))
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+    }
+
+    private func humanLabel(for kind: String) -> String {
+        switch kind {
+        case "junk":         "Junk"
+        case "uninstall":    "Uninstall"
+        case "duplicates":   "Duplicates"
+        case "dev":          "Dev mode"
+        default:             kind.capitalized
+        }
     }
 
     private var timeOfDay: String {

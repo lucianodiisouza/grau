@@ -100,6 +100,9 @@ final class JunkCleanerViewModel {
             var state = (try? manifestStore.read(StateFile.self, from: ManifestStore.stateFile)) ?? StateFile()
             state.lastJunkScan = summary
             state.lastClean = summary
+            // Also append to the rolling history (capped at
+            // StateFile.maxHistoryEntries).
+            state = state.appendingHistory(summary)
             try? manifestStore.write(state, to: ManifestStore.stateFile)
             lastOutcome = outcome
             phase = .completed
