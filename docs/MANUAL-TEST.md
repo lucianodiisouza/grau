@@ -188,7 +188,82 @@ the corresponding release.
 
 ## Phase 5 — Dev mode (beta 5)
 
-_(filled in when Phase 5 lands)_
+Dev Mode is hidden by default. Enable it via Settings → Developer
+→ "Show developer features", or with
+`defaults write app.grau.mac grau.devModeEnabled -bool true`.
+
+- [ ] With Dev Mode enabled, "Dev Mode" appears in the sidebar
+      (between Duplicates and Settings).
+- [ ] Clicking "Dev Mode" opens the tabbed view with six tabs:
+      Packages, node_modules, Docker, Simulators, Derived Data,
+      Archives.
+- [ ] "Refresh" button starts a full scan. A progress spinner
+      replaces the button while scanning.
+- [ ] First scan typically takes 2–10s (the six inspectors run
+      in parallel).
+
+### Packages tab
+
+- [ ] Lists every installed package manager cache that exists on
+      the host. A non-existent cache is hidden (not shown).
+- [ ] Each row shows the kind (e.g. "npm", "Yarn (classic)") and
+      size. Path is truncated to 2 lines.
+- [ ] Empty state: "No package caches found" when none of the 16
+      are present (e.g. a fresh dev box without npm).
+
+### node_modules tab
+
+- [ ] Lists every `node_modules` directory found under `~/` plus
+      the usual project roots (Code, Developer, Projects, repos,
+      src, work), to a max depth of 6.
+- [ ] Each row shows the project name (parent dir) and size.
+- [ ] The total size in the header matches the sum of all rows.
+- [ ] The scanner does NOT recurse INTO a `node_modules` directory
+      (so we don't see `node_modules/<pkg>/node_modules/...`).
+- [ ] A project at depth > 6 (e.g. `~/a/b/c/d/e/f/g/...`) is
+      ignored.
+
+### Docker tab
+
+- [ ] With Docker not installed: "Docker not installed" empty state.
+- [ ] With Docker installed but daemon not running: "Docker daemon
+      not running" empty state.
+- [ ] With Docker daemon running: shows a card with Build Cache
+      size and Reclaimable size.
+
+### Simulators tab
+
+- [ ] Lists every simulator under
+      `~/Library/Developer/CoreSimulator/Devices/`.
+- [ ] Each row shows name, runtime, size.
+- [ ] A device whose `device.plist` has `state == "Booted"` shows
+      a "Booted" warning pill and is NOT included in the
+      `DevReport.totalSize` (i.e. it would be skipped if you ever
+      trash en masse).
+
+### Derived Data tab
+
+- [ ] Lists every per-project cache under
+      `~/Library/Developer/Xcode/DerivedData/`.
+- [ ] Each row shows the project name (folder minus the trailing
+      -hash) and the folder name (truncated to middle).
+- [ ] Sorted by size descending.
+
+### Archives tab
+
+- [ ] Lists every `.xcarchive` bundle under
+      `~/Library/Developer/Xcode/Archives/<date>/`.
+- [ ] A warning banner at the top reminds the user that archives
+      are required for shipping.
+- [ ] Each row shows the archive name, the archive date (mtime),
+      and the size.
+- [ ] Empty state when no archives exist (rare for a dev machine).
+
+### Performance
+
+- [ ] Full scan (all six inspectors) completes in < 15s on a
+      typical dev machine.
+- [ ] `cd graucore && swift test` — 155/155 tests pass.
 
 ## Phase 6a — Polish pt 1 (1.0)
 

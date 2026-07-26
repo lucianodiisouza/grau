@@ -6,10 +6,64 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 5 (Beta 5)
-- Dev mode: `node_modules` finder, 16 package caches, Docker,
-  iOS Simulators, Xcode DerivedData, Archives
-- Settings toggle "Show developer features" (default OFF)
+### Planned for Phase 6a (1.0)
+- App icon, DMG packaging, notarization, Privacy Manifest
+- `PrivacyInfo.xcprivacy` declaring `NSPrivacyAccessedAPITypes`
+- README screenshots + polished landing page
+
+## [0.6.0-beta.5] — 2026-07-26
+
+Public beta. Dev Mode is end-to-end functional but hidden behind
+a Settings toggle. The sidebar gains a "Dev Mode" item that
+opens a tabbed view of six developer-tooling inspectors. All
+inspectors run in parallel via `DevReportGenerator`.
+
+### graucore
+- **`Dev/PackageCacheKind`** — `enum` with 16 cases: npm, Yarn
+  classic/Berry, pnpm, Bun, CocoaPods, Carthage, SwiftPM, Maven,
+  Gradle, sbt, Ivy, Cargo, RubyGems, pip, Poetry. Each case
+  declares its `defaultPaths`.
+- **`Dev/PackageCacheScanner`** — `actor`. Sizes all 16 caches
+  in parallel via `withTaskGroup` + `DirectorySizer`.
+- **`Dev/NodeModulesFinder`** — `actor`. Walks `~/` plus the
+  usual project roots (Code, Developer, Projects, repos, src,
+  work) to depth 6, finds every `node_modules`, reports size
+  via `DirectorySizer`. Honors `PathExclusions.standard` and
+  does NOT recurse INTO `node_modules`.
+- **`Dev/CLIRunner`** — `struct` `Process` wrapper with timeout.
+  `which(_:)` resolves via `/usr/bin/which`; `run(_:arguments:)`
+  races the process against a `Task.sleep` timeout.
+- **`Dev/DockerInspector`** — `actor`. Shells `docker system df -v`,
+  parses the Build Cache row, and surfaces three states:
+  `dockerNotInstalled`, `dockerDaemonDown`, parsed result.
+  `parseSize` handles B/KB/MB/GB/TB in either case.
+- **`Dev/SimulatorInspector`** — `actor`. Lists
+  `~/Library/Developer/CoreSimulator/Devices/<UDID>/device.plist`
+  entries, skipping `state == "Booted"` in `DevReport.totalSize`.
+- **`Dev/DerivedDataInspector`** — `actor`. Walks
+  `~/Library/Developer/Xcode/DerivedData/<Project>-<hash>/` and
+  splits the folder name into `(project, hash)`.
+- **`Dev/ArchivesInspector`** — `actor`. Walks
+  `~/Library/Developer/Xcode/Archives/<date>/<name>.xcarchive/`.
+- **`Dev/DevReport`** — `struct` aggregator. `totalSize` sums
+  present package caches + non-booted simulators + node_modules
+  + DerivedData + Archives.
+- **`Dev/DevReportGenerator`** — `actor`. Runs all six inspectors
+  in parallel via `async let`.
+
+Test count: **155** tests, all green (was 94 in Beta 4 — 61 new
+tests for Phase 5).
+
+### grau
+- **`DevMode/DevModeViewModel`** — `@MainActor @Observable`. Holds
+  the `DevReport` and exposes `refresh()`.
+- **`DevMode/DevModeView`** — tabbed UI. Six tabs: Packages,
+  node_modules, Docker, Simulators, Derived Data, Archives. Each
+  tab has an empty state. The Archives tab includes a
+  userCaution warning banner ("archives are required for
+  shipping").
+- Sidebar item "Dev Mode" appears only when the user enables
+  "Show developer features" in Settings.
 
 ## [0.5.0-beta.4] — 2026-07-26
 
