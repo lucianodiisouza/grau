@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  graucore-tests:
+    name: graucore tests
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Cache SwiftPM artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            graucore/.build
+            graucore/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('graucore/Package.resolved', 'graucore/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Test graucore
+        run: |
+          cd graucore
+          swift test
+
+  app-build:
+    name: app build (Debug)
+    runs-on: macos-14
+    needs: graucore-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache SwiftPM artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            graucore/.build
+            graucore/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('graucore/Package.resolved', 'graucore/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build app (Debug)
+        run: |
+          xcodebuild \
+            -project grau.xcodeproj \
+            -scheme grau \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+  app-build-release:
+    name: app build (Release)
+    runs-on: macos-14
+    needs: graucore-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache SwiftPM artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            graucore/.build
+            graucore/.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('graucore/Package.resolved', 'graucore/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build app (Release)
+        run: |
+          xcodebuild \
+            -project grau.xcodeproj \
+            -scheme grau \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
