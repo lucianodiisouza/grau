@@ -11,6 +11,7 @@ import graucore
 
 struct MenuBarContentView: View {
     @Environment(AppViewModel.self) private var appVM
+    @Environment(\.openWindow) private var openWindow
     @State private var menuState = MenuBarState()
 
     var body: some View {
@@ -68,14 +69,34 @@ struct MenuBarContentView: View {
     @ViewBuilder
     private var quickActions: some View {
         VStack(spacing: Spacing.xs) {
-            SecondaryButton("Open Grau", systemImage: "macwindow") {
-                NSApp.activate(ignoringOtherApps: true)
+            SecondaryButton("Dar um Grau", systemImage: "macwindow") {
+                openMainWindow()
             }
             SecondaryButton("Empty Trash", systemImage: "trash.slash", isEnabled: menuState.trashSize > 0) {
                 // Open Finder with Trash selected; user confirms empty in Finder
                 NSWorkspace.shared.activateFileViewerSelecting(
                     [URL(fileURLWithPath: NSHomeDirectory() + "/.Trash")]
                 )
+            }
+            Divider()
+            DestructiveButton("Quit Grau", systemImage: "power") {
+                NSApp.terminate(nil)
+            }
+        }
+    }
+
+    private func openMainWindow() {
+        // `openWindow(id:)` alone sometimes fails to surface the
+        // window when the menu bar extra has captured focus; bring
+        // the app forward first, then request the scene.
+        NSApp.activate(ignoringOtherApps: true)
+        openWindow(id: "main")
+        // Belt-and-suspenders: if the scene already exists but is
+        // hidden behind another app's window, order it front.
+        DispatchQueue.main.async {
+            for window in NSApp.windows where window.identifier?.rawValue.contains("main") == true
+                || window.title == "Grau" {
+                window.makeKeyAndOrderFront(nil)
             }
         }
     }
