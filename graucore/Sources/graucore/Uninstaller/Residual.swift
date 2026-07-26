@@ -2,15 +2,27 @@
 //  Residual.swift
 //  graucore
 //
-//  TODO(Phase 2): implement. See docs/ARCHITECTURE.md § 4 and
-//  docs/TASKS.md for the per-phase acceptance criteria.
-//
-//  Stub created in Task 0.3 (scaffold) so the package builds and the
-//  test target runs. Real implementation lands in the named phase.
-//
 
 import Foundation
 
-/// Placeholder namespace so the file compiles. Replace with the real
-/// type when the module is implemented.
-public enum ResidualPlaceholder {}
+public struct Residual: Identifiable, Hashable, Sendable {
+    public let id: UUID
+    public let kind: ResidualKind
+    public let path: URL
+    public let size: ByteSize
+    public let note: String?
+
+    public init(
+        id: UUID = UUID(),
+        kind: ResidualKind,
+        path: URL,
+        size: ByteSize,
+        note: String? = nil
+    ) {
+        self.id = id
+        self.kind = kind
+        self.path = path
+        self.size = size
+        self.note = note
+    }
+}

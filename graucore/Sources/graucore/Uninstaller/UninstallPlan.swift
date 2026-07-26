@@ -2,15 +2,21 @@
 //  UninstallPlan.swift
 //  graucore
 //
-//  TODO(Phase 2): implement. See docs/ARCHITECTURE.md § 4 and
-//  docs/TASKS.md for the per-phase acceptance criteria.
-//
-//  Stub created in Task 0.3 (scaffold) so the package builds and the
-//  test target runs. Real implementation lands in the named phase.
+//  The output of planning an uninstall: the app + the selected
+//  residuals + the total size. Lives in memory only; persisted
+//  via the manifest written by TrashMover after execution.
 //
 
 import Foundation
 
-/// Placeholder namespace so the file compiles. Replace with the real
-/// type when the module is implemented.
-public enum UninstallPlanPlaceholder {}
+public struct UninstallPlan: Sendable, Hashable {
+    public let app: InstalledApp
+    public let residuals: [Residual]
+    public let totalSize: ByteSize
+
+    public init(app: InstalledApp, residuals: [Residual], totalSize: ByteSize) {
+        self.app = app
+        self.residuals = residuals
+        self.totalSize = totalSize
+    }
+}
