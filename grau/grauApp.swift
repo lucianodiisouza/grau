@@ -2,19 +2,54 @@
 //  grauApp.swift
 //  grau
 //
-//  Stub created in Task 0.3 so the Xcode project builds.
-//  Real app skeleton (MenuBarExtra, Window scenes, AppViewModel)
-//  lands in Task 0.5 per docs/TASKS.md.
+//  @main entry point. Three scenes:
+//    1. MenuBarExtra — always present, popover style
+//    2. Main window — dashboard / feature tabs
+//    3. Settings window
+//
+//  See docs/HANDOFF.md § 0.4 and docs/ARCHITECTURE.md § 3.
 //
 
 import SwiftUI
 
 @main
 struct grauApp: App {
+    @State private var appVM = AppViewModel()
+
     var body: some Scene {
-        Window("Grau", id: "main") {
-            Text("Grau — coming in Task 0.5")
-                .frame(minWidth: 400, minHeight: 200)
+        MenuBarExtra("Grau", systemImage: "circle.fill") {
+            MenuBarContentView()
+                .environment(appVM)
         }
+        .menuBarExtraStyle(.window)
+
+        Window("Grau", id: "main") {
+            MainWindowView()
+                .environment(appVM)
+                .frame(minWidth: 720, minHeight: 480)
+        }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 900, height: 600)
+        .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button("About Grau") {
+                    NSApp.orderFrontStandardAboutPanel(nil)
+                }
+            }
+            CommandGroup(after: .newItem) {
+                Button("Open Grau") {
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+                .keyboardShortcut("0", modifiers: .command)
+            }
+        }
+
+        Window("Settings", id: "settings") {
+            SettingsView()
+                .environment(appVM)
+                .frame(minWidth: 480, minHeight: 320)
+        }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 520, height: 360)
     }
 }
