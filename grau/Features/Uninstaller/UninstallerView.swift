@@ -122,6 +122,20 @@ struct UninstallerView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
+            // Bundle size column. Renders "—" while the background
+            // sizing pass is still running so the row width stays
+            // stable as values stream in.
+            if let size = viewModel.bundleSize(for: app) {
+                Text(size.compactLabel)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else if !viewModel.hasComputedSize(for: app) {
+                Text("—")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(1)
+            }
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm)
@@ -189,9 +203,26 @@ struct UninstallerView: View {
                 VStack(alignment: .leading, spacing: Spacing.xs) {
                     Text(app.name)
                         .font(.headline)
-                    Text("Version \(app.installedVersion)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: Spacing.xs) {
+                        Text("Version \(app.installedVersion)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if let size = viewModel.bundleSize(for: app) {
+                            Text("·")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                            Text(size.compactLabel)
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        } else if !viewModel.hasComputedSize(for: app) {
+                            Text("·")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                            Text("—")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
                     Text(app.bundleURL.path)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)

@@ -33,6 +33,16 @@ final class UninstallerViewModel {
     /// pre-warm the cache for every scanned app after `scan()`.
     private(set) var icons: [String: NSImage] = [:]
 
+    /// Per-app bundle size, filled in incrementally after `scan()`
+    /// returns. Keyed by `InstalledApp.id`. A missing key means
+    /// "still computing"; a present key (even with `bytes == 0`)
+    /// means "done — bundle is empty or unreadable".
+    private(set) var bundleSizes: [String: ByteSize] = [:]
+
+    /// The Task that's currently streaming bundle sizes in the
+    /// background, so a fresh `scan()` can cancel the previous one.
+    private var sizeTask: Task<Void, Never>?
+
     private let scanner: AppScanner
     private let finder: ResidualFinder
     private let uninstaller: Uninstaller
@@ -54,20 +64,38 @@ final class UninstallerViewModel {
         icons[app.bundleURL.path]
     }
 
+    /// Total size that will be freed if the user confirms the
+    /// uninstall: the bundle itself plus every selected residual.
+    /// The bundle is always counted (it goes to Trash no matter
+    /// which residuals are checked) so this is never less than
+    /// `selectedApp?.bundleSize` once the size has been computed.
+    /// Returns `.zero` if no app is selected.
     var totalSelectedSize: ByteSize {
-        ByteSize(bytes: residuals
+        guard let app = selectedApp else { return .zero }
+        let bundleBytes = bundleSizes[app.id]?.bytes ?? 0
+        let residualBytes = residuals
             .filter { selectedResidualIDs.contains($0.id) }
-            .reduce(0) { $0 + $1.size.bytes }
-        )
+            .reduce(Int64(0)) { $0 + $1.size.bytes }
+        return ByteSize(bytes: bundleBytes + residualBytes)
     }
 
     func scan() async {
         phase = .scanning
         errorMessage = nil
+        // Cancel any in-flight sizing from a previous scan.
+        sizeTask?.cancel()
+        bundleSizes.removeAll()
         let installed = await scanner.scan()
         apps = installed
         warmIconCache(for: installed)
         phase = .loaded
+        // Kick off bundle size computation in the background so the
+        // list renders immediately and rows fill in as each size
+        // resolves. A 30 GB Xcode.app would otherwise block the
+        // list for a couple of seconds.
+        sizeTask = Task { [weak self] in
+            await self?.computeBundleSizes()
+        }
     }
 
     /// Pre-loads the real `.icns` icon for every scanned app via
@@ -84,6 +112,40 @@ final class UninstallerViewModel {
             let image = NSWorkspace.shared.icon(forFile: key)
             image.size = NSSize(width: 32, height: 32)
             icons[key] = image
+        }
+    }
+
+    /// Returns the cached bundle size for `app`, or `nil` if the
+    /// background sizing pass hasn't finished yet. The view
+    /// renders a "—" placeholder while nil.
+    func bundleSize(for app: InstalledApp) -> ByteSize? {
+        bundleSizes[app.id]
+    }
+
+    /// True once the size for `app` has been computed (even if
+    /// the result is 0 — e.g. unreadable bundle). False while the
+    /// background pass is still running.
+    func hasComputedSize(for app: InstalledApp) -> Bool {
+        bundleSizes[app.id] != nil
+    }
+
+    private func computeBundleSizes() async {
+        // Snapshot the current apps so a concurrent scan() doesn't
+        // race us. We mutate `bundleSizes` on the main actor.
+        let snapshot = apps
+        await withTaskGroup(of: (String, Int64).self) { group in
+            for app in snapshot {
+                let url = app.bundleURL
+                let id = app.id
+                group.addTask {
+                    let bytes = AppScanner.computeBundleSize(at: url)
+                    return (id, bytes)
+                }
+            }
+            for await (id, bytes) in group {
+                if Task.isCancelled { return }
+                bundleSizes[id] = ByteSize(bytes: bytes)
+            }
         }
     }
 
