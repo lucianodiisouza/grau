@@ -29,7 +29,9 @@
 		932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */; };
 		9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */; };
 		93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */; };
+		949136354949033B7F5C880C /* NotificationCenterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE9A5DBEFA81C978A104E4D /* NotificationCenterViewModel.swift */; };
 		96F54652D0F71C0644EB2AEC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839DBC1C2917DB3E916A3BB /* SettingsView.swift */; };
+		A1C544ECC15C94D46F8C1F5F /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736B5937EB991DEB2A52033C /* NotificationCenterView.swift */; };
 		A7187379241005F719D14BF2 /* PreferencesKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68A56B27A5086F480717A44 /* PreferencesKeys.swift */; };
 		A740441052CB6CF2A54BCAD3 /* JunkCleanerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */; };
 		A856654F9DEB24CE9D5EBF10 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB658C5236E51B314B5435D /* TrashView.swift */; };
@@ -56,6 +58,7 @@
 		17E3110DB98F94063A49DC04 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
 		1D25BFFDB8CB16127505EB6F /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
 		281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCoordinator.swift; sourceTree = "<group>"; };
+		2BE9A5DBEFA81C978A104E4D /* NotificationCenterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterViewModel.swift; sourceTree = "<group>"; };
 		3B508F50DD5517923056E4AF /* JunkCleanerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JunkCleanerViewModel.swift; sourceTree = "<group>"; };
 		3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionPrimerView.swift; sourceTree = "<group>"; };
 		444B34B8B2B4A85E15DC8900 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 		4F631A3E70A647C19987FDDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6C635470D794F17CEB27903B /* ErrorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorStateView.swift; sourceTree = "<group>"; };
 		6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		736B5937EB991DEB2A52033C /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
 		73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = grauApp.swift; sourceTree = "<group>"; };
 		781BCABAEBDFD44AB6C7B30A /* grau.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = grau.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81A75F9231A02B49124DBEC9 /* DevModeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevModeViewModel.swift; sourceTree = "<group>"; };
@@ -257,6 +261,8 @@
 		91857BE3B9040F6D977FDA60 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
+				736B5937EB991DEB2A52033C /* NotificationCenterView.swift */,
+				2BE9A5DBEFA81C978A104E4D /* NotificationCenterViewModel.swift */,
 				281FE5D6D2D2B9C56210CC9E /* NotificationCoordinator.swift */,
 			);
 			path = Notifications;
@@ -420,6 +426,8 @@
 				2246F1624685C2F0E2911938 /* MainWindowView.swift in Sources */,
 				1BF5F52BDB0EE8AD11CB23AC /* MenuBarContentView.swift in Sources */,
 				2C9ACF9A889E799C800EE7F8 /* MenuBarState.swift in Sources */,
+				A1C544ECC15C94D46F8C1F5F /* NotificationCenterView.swift in Sources */,
+				949136354949033B7F5C880C /* NotificationCenterViewModel.swift in Sources */,
 				739CC852842061C5E91C9544 /* NotificationCoordinator.swift in Sources */,
 				FA9E4E31716F6F0F636842F2 /* OnboardingView.swift in Sources */,
 				AAEB8D66695F4D1091A9D7B7 /* PermissionCoordinator.swift in Sources */,
@@ -527,7 +535,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
@@ -611,7 +619,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};

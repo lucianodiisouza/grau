@@ -62,33 +62,36 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
     case duplicates
     case devMode
     case trash
+    case notifications
     case settings
 
     public var id: String { rawValue }
 
     public var title: String {
         switch self {
-        case .dashboard:    "Dashboard"
-        case .clean:        "Clean"
-        case .uninstaller:  "Uninstaller"
-        case .diskLens:     "Disk Lens"
-        case .duplicates:   "Duplicates"
-        case .devMode:      "Dev Mode"
-        case .trash:        "Trash"
-        case .settings:     "Settings"
+        case .dashboard:       "Dashboard"
+        case .clean:           "Clean"
+        case .uninstaller:     "Uninstaller"
+        case .diskLens:        "Disk Lens"
+        case .duplicates:      "Duplicates"
+        case .devMode:         "Dev Mode"
+        case .trash:           "Trash"
+        case .notifications:   "Notifications"
+        case .settings:        "Settings"
         }
     }
 
     public var systemImage: String {
         switch self {
-        case .dashboard:    "rectangle.grid.2x2"
-        case .clean:        "trash"
-        case .uninstaller:  "shippingbox"
-        case .diskLens:     "circle.grid.3x3"
-        case .duplicates:   "doc.on.doc"
-        case .devMode:      "hammer"
-        case .trash:        "arrow.uturn.backward.circle"
-        case .settings:     "gear"
+        case .dashboard:       "rectangle.grid.2x2"
+        case .clean:           "trash"
+        case .uninstaller:     "shippingbox"
+        case .diskLens:        "circle.grid.3x3"
+        case .duplicates:      "doc.on.doc"
+        case .devMode:         "hammer"
+        case .trash:           "arrow.uturn.backward.circle"
+        case .notifications:   "bell"
+        case .settings:        "gear"
         }
     }
 

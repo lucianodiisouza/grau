@@ -30,6 +30,7 @@ public enum NotificationRuleID: String, CaseIterable {
 final class NotificationCoordinator {
     private let volumeMonitor: VolumeMonitor
     private let trashReader: TrashInfoReader
+    private let log: NotificationLog
     private var monitorTask: Task<Void, Never>?
 
     /// Thresholds in bytes (or fractions, for disk).
@@ -39,10 +40,12 @@ final class NotificationCoordinator {
 
     init(
         volumeMonitor: VolumeMonitor = VolumeMonitor(),
-        trashReader: TrashInfoReader = TrashInfoReader()
+        trashReader: TrashInfoReader = TrashInfoReader(),
+        log: NotificationLog = NotificationLog()
     ) {
         self.volumeMonitor = volumeMonitor
         self.trashReader = trashReader
+        self.log = log
     }
 
     func requestAuthorizationIfNeeded() async {
@@ -172,6 +175,9 @@ final class NotificationCoordinator {
             try await UNUserNotificationCenter.current().add(request)
             recordFired(id)
             recordValue(id, value: value)
+            // Also append to the persistent log so the in-app
+            // Notification Center can show past entries.
+            await log.record(ruleID: id.rawValue, title: title, body: body)
         } catch {
             // Ignore; no auth or system error.
         }
