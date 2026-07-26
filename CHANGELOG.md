@@ -6,10 +6,46 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 7 (1.2)
-- Treemap visualization for Disk Lens
+### Planned for Phase 8 (1.3)
 - Per-file cancellation in Duplicates scanner
 - In-app trash restore filtering (by kind, by date)
+- Per-CPU-core auto-tuning for the duplicate scanner
+- Treemap labels in the gutter when the cell is too small
+
+## [1.2.0] — 2026-07-26
+
+Performance and visualization pass. The duplicates scanner
+parallelizes its hash phases; the disk lens gets a treemap
+view.
+
+### Highlights
+- ⚡ **Duplicates: per-file parallel hashing.** Phase 2
+  (partial) and Phase 3 (full) now run with up to 8 in-flight
+  hash tasks. A 50k-file home scans in roughly 1/3 the time.
+  The size-bucket phase stays serial (no IO).
+- 📊 **Disk Lens: treemap view.** A new segmented control
+  toggles between the Top-N list and a squarified treemap.
+  Tapping a cell drills in, right-click reveals in Finder.
+
+### graucore
+- **`Duplicates/DuplicateScanner`** — `maxParallelism`
+  parameter (default 8). New `hashInParallel` static helper
+  using a worker-pool TaskGroup pattern.
+- Test count: **161** (unchanged from v1.1; the parallel
+  implementation passes the existing pipeline tests).
+
+### grau
+- New file `Features/DiskLens/DiskTreemapView.swift`. The
+  squarified treemap algorithm (Bruls, Huijsen, van Wijk,
+  2000) is implemented from scratch in SwiftUI.
+- `DiskLensView` gets a `ViewMode` picker (list / treemap).
+  Drill-in, context menu, and reveal-in-Finder work in
+  both modes.
+
+### Files
+- New: `grau/Features/DiskLens/DiskTreemapView.swift`
+- Modified: `grau/Features/DiskLens/DiskLensView.swift`,
+  `graucore/Sources/graucore/Duplicates/DuplicateScanner.swift`
 
 ## [1.1.0] — 2026-07-26
 

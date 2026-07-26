@@ -269,6 +269,31 @@ Dev Mode is hidden by default. Enable it via Settings → Developer
 
 _(filled in when Phase 6a lands)_
 
+## Phase 7 — Performance + treemap (1.2)
+
+### Duplicates scanner parallelism
+
+- [ ] The ScannerView shows phase labels updating (Sizing →
+      Partial hash → Full hash) as before.
+- [ ] A 5k-file `~/Downloads` scan completes in < 30s on a
+      recent Mac (vs. ~50s on v1.0).
+- [ ] Memory stays under 200 MB during a full-`~/` scan
+      (the hash map is the only large allocation).
+
+### Disk Lens treemap
+
+- [ ] A new segmented control in the toolbar (list /
+      treemap) switches the view.
+- [ ] Treemap cells tile the available area with no gaps;
+      the largest folder is in a corner (squarified
+      algorithm).
+- [ ] Tapping a cell drills in (same as a list row).
+- [ ] Right-click → "Reveal in Finder" works.
+- [ ] Cells smaller than 80×36pt don't show their label
+      (visual cleanup).
+- [ ] Drill back out via the breadcrumb, then toggle to list
+      view: same Top-N data, no re-scan needed.
+
 ## Phase 6b — Polish pt 2 (1.1)
 
 ### Self-update (Sparkle)
