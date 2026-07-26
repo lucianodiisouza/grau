@@ -77,9 +77,33 @@ public struct LastScanSummary: Codable, Sendable, Equatable {
 public struct StateFile: Codable, Sendable, Equatable {
     public var lastJunkScan: LastScanSummary?
     public var lastClean: LastScanSummary?
+    /// Last N scan summaries, newest first. Capped at
+    /// `maxHistoryEntries` (10) by the writer.
+    public var scanHistory: [LastScanSummary]
 
-    public init(lastJunkScan: LastScanSummary? = nil, lastClean: LastScanSummary? = nil) {
+    /// Cap for the scanHistory list. Older entries are dropped
+    /// from the tail.
+    public static let maxHistoryEntries: Int = 10
+
+    public init(
+        lastJunkScan: LastScanSummary? = nil,
+        lastClean: LastScanSummary? = nil,
+        scanHistory: [LastScanSummary] = []
+    ) {
         self.lastJunkScan = lastJunkScan
         self.lastClean = lastClean
+        self.scanHistory = scanHistory
+    }
+
+    /// Appends a new summary to the history and trims to the
+    /// max entries. Returns a new `StateFile` (state is a
+    /// value type, so callers must use the returned value).
+    public func appendingHistory(_ summary: LastScanSummary) -> StateFile {
+        var copy = self
+        copy.scanHistory.insert(summary, at: 0)
+        if copy.scanHistory.count > Self.maxHistoryEntries {
+            copy.scanHistory = Array(copy.scanHistory.prefix(Self.maxHistoryEntries))
+        }
+        return copy
     }
 }
