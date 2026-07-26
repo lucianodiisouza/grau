@@ -64,6 +64,11 @@ struct grauApp: App {
         }
         .menuBarExtraStyle(.window)
 
+        // The SwiftUI `Window` scene is single-instance and
+        // restores a cached frame from defaults on subsequent
+        // presentations. We rely on defaultSize + minWidth/
+        // minHeight for the initial size and reset the cached
+        // frame on first open (see openMainWindow()).
         Window("Grau", id: "main") {
             Group {
                 if appVM.hasOnboarded {
@@ -75,11 +80,6 @@ struct grauApp: App {
             .environment(appVM)
             .frame(minWidth: 900, minHeight: 600)
         }
-        // .contentSize resizability makes the window hug the
-        // intrinsic size of its content — which means switching
-        // to a slimmer view (Uninstaller) shrinks the window
-        // itself. .contentMinSize keeps the default + min size
-        // we set, and lets the user grow past it.
         .windowResizability(.contentMinSize)
         .defaultSize(width: 1100, height: 720)
         .commands {

@@ -19,6 +19,7 @@ struct UninstallerView: View {
             Divider()
             content
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {
             if viewModel.phase == .idle {
                 await viewModel.scan()

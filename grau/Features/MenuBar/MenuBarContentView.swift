@@ -91,11 +91,26 @@ struct MenuBarContentView: View {
         // the app forward first, then request the scene.
         NSApp.activate(ignoringOtherApps: true)
         openWindow(id: "main")
-        // Belt-and-suspenders: if the scene already exists but is
-        // hidden behind another app's window, order it front.
+        // The SwiftUI Window scene restores a cached NSWindow
+        // frame from defaults, which can shrink the window
+        // well below defaultSize after switching to a slim view
+        // (Uninstaller) and back. Force the window to the
+        // default 1100x720 on every open, then let the user
+        // resize from there.
         DispatchQueue.main.async {
-            for window in NSApp.windows where window.identifier?.rawValue.contains("main") == true
-                || window.title == "Grau" {
+            for window in NSApp.windows where window.title == "Grau" {
+                if window.frame.width < 900 || window.frame.height < 600 {
+                    let target = NSSize(width: 1100, height: 720)
+                    var frame = window.frame
+                    frame.size = target
+                    // Centre on the screen the window is on
+                    if let screen = window.screen {
+                        let screenFrame = screen.visibleFrame
+                        frame.origin.x = screenFrame.midX - target.width / 2
+                        frame.origin.y = screenFrame.midY - target.height / 2
+                    }
+                    window.setFrame(frame, display: true, animate: true)
+                }
                 window.makeKeyAndOrderFront(nil)
             }
         }
