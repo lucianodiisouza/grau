@@ -11,7 +11,6 @@ import graucore
 
 struct DiskLensView: View {
     @Environment(AppViewModel.self) private var appVM
-    @State private var builder = DiskTreeBuilder()
     @State private var currentPath: URL = URL(fileURLWithPath: "/")
     @State private var nodes: [DiskTreeNode] = []
     @State private var isLoading = false
@@ -64,7 +63,7 @@ struct DiskLensView: View {
             }
             .buttonStyle(.borderless)
             Button {
-                Task { await reload() }
+                Task { await reload(force: true) }
             } label: {
                 Label("Refresh", systemImage: "arrow.clockwise")
             }
@@ -175,9 +174,17 @@ struct DiskLensView: View {
         }
     }
 
-    private func reload() async {
+    private func reload(force: Bool = false) async {
         isLoading = true
-        nodes = await builder.topFolders(at: currentPath, limit: 50)
+        // Reading from the shared builder: cache hits are
+        // synchronous, so `isLoading` flips false almost immediately
+        // when the path was already measured. Cold paths still pay
+        // the full I/O cost once, then are free thereafter.
+        nodes = await appVM.diskTreeBuilder.topFolders(
+            at: currentPath,
+            limit: 50,
+            force: force
+        )
         isLoading = false
     }
 }

@@ -9,6 +9,7 @@
 
 import Foundation
 import Observation
+import graucore
 
 @MainActor
 @Observable
@@ -37,6 +38,11 @@ public final class AppViewModel {
     public var downloadsThresholdDays: Int {
         didSet { UserDefaults.standard.set(downloadsThresholdDays, forKey: Self.downloadsThresholdDaysKey) }
     }
+
+    /// Long-lived Disk Lens indexer. Held here (not as @State in
+    /// the view) so its measurement cache survives switching tabs:
+    /// coming back to Disk Lens, or drilling back up, is O(1).
+    public let diskTreeBuilder = DiskTreeBuilder()
 
     public init() {
         // Read persisted state once at init time. The `didSet` hooks

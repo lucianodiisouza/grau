@@ -9,26 +9,48 @@
 //  v1 ships a Top-N list view, NOT a full treemap. The full
 //  treemap lands in v1.1 per docs/REVIEW.md S3.
 //
+//  @MainActor so the cache is read/written on the main thread
+//  (SwiftUI's render path) without actor-hop overhead. The
+//  underlying I/O is still done off-main via TaskGroup.
+//
 
 import Foundation
 
-public actor DiskTreeBuilder {
+@MainActor
+@Observable
+public final class DiskTreeBuilder {
+
+    /// Cache of `topFolders` results, keyed by the absolute path
+    /// of the folder whose children we measured. The instance
+    /// lives for the lifetime of the app (held by AppViewModel),
+    /// so re-entering Disk Lens — or drilling back up — is O(1).
+    public private(set) var cache: [String: [DiskTreeNode]] = [:]
 
     public init() {}
 
     /// Builds a single-level Top-N list of the largest immediate
-    /// children of `root`. Sizes each in parallel.
+    /// children of `root`. Returns the cached result if available.
+    /// Set `force` to bypass the cache (e.g. explicit Refresh).
     public func topFolders(
         at root: URL,
         limit: Int = 20,
-        followSymlinks: Bool = false
+        followSymlinks: Bool = false,
+        force: Bool = false
     ) async -> [DiskTreeNode] {
+        let key = root.standardizedFileURL.path
+        if !force, let cached = cache[key] {
+            return Array(cached.prefix(limit))
+        }
+
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(
             at: root,
             includingPropertiesForKeys: [.isDirectoryKey, .fileSizeKey],
             options: [.skipsHiddenFiles, .skipsPackageDescendants]
-        ) else { return [] }
+        ) else {
+            cache[key] = []
+            return []
+        }
 
         let symlinks = contents.filter { url in
             (try? url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) ?? false
@@ -68,7 +90,6 @@ public actor DiskTreeBuilder {
 
         let nodes = sizes
             .sorted { $0.value > $1.value }
-            .prefix(limit)
             .map { (url, size) in
                 DiskTreeNode(
                     url: url,
@@ -76,7 +97,8 @@ public actor DiskTreeBuilder {
                     size: ByteSize(bytes: size)
                 )
             }
-        return Array(nodes)
+        cache[key] = nodes
+        return Array(nodes.prefix(limit))
     }
 
     /// Builds the size of a single path (used when drilling into
