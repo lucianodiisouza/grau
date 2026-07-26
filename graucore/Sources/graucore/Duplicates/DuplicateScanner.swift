@@ -15,9 +15,15 @@ import Foundation
 public actor DuplicateScanner {
 
     private let hasher: FileHasher
+    /// Maximum number of in-flight hash tasks. 8 is a sane default
+    /// for a desktop app — keeps disk IO reasonable while
+    /// parallelizing well enough to scan a 50k-file home in a
+    /// couple of minutes.
+    public let maxParallelism: Int
 
-    public init(hasher: FileHasher = FileHasher()) {
+    public init(hasher: FileHasher = FileHasher(), maxParallelism: Int = 8) {
         self.hasher = hasher
+        self.maxParallelism = max(1, maxParallelism)
     }
 
     public enum Phase: String, Sendable {
@@ -44,6 +50,7 @@ public actor DuplicateScanner {
                     root: root,
                     exclusions: exclusions,
                     hasher: hasher,
+                    parallelism: maxParallelism,
                     continuation: continuation
                 )
                 continuation.finish()
@@ -58,6 +65,7 @@ public actor DuplicateScanner {
         root: URL,
         exclusions: PathExclusionsProvider,
         hasher: FileHasher,
+        parallelism: Int,
         continuation: AsyncStream<ScannerEvent>.Continuation
     ) async {
         // Phase 1: collect all files + their sizes.
@@ -83,46 +91,34 @@ public actor DuplicateScanner {
         let sizeCandidates = bySize.filter { $0.value.count > 1 }.flatMap { $0.value }
         if sizeCandidates.isEmpty { return }
 
-        // Phase 2: partial hash.
+        // Phase 2: partial hash (parallel).
         continuation.yield(.phaseStarted(.partialHashing))
-        var partialBuckets: [String: [URL]] = [:]
-        var processed = 0
-        for url in sizeCandidates {
-            if Task.isCancelled { return }
-            do {
-                let h = try hasher.partialHash(of: url)
-                partialBuckets[h, default: []].append(url)
-            } catch {
-                continue
+        let partialBuckets = await hashInParallel(
+            urls: sizeCandidates,
+            hash: { try hasher.partialHash(of: $0) },
+            parallelism: parallelism,
+            progress: { processed, total in
+                continuation.yield(.phaseProgress(.partialHashing, scanned: processed, total: total))
             }
-            processed += 1
-            if processed % 50 == 0 {
-                continuation.yield(.phaseProgress(.partialHashing, scanned: processed, total: sizeCandidates.count))
-            }
-        }
+        )
+        if Task.isCancelled { return }
         continuation.yield(.phaseCompleted(.partialHashing))
         let partialCandidates = partialBuckets
             .filter { $0.value.count > 1 }
             .flatMap { $0.value }
         if partialCandidates.isEmpty { return }
 
-        // Phase 3: full hash.
+        // Phase 3: full hash (parallel).
         continuation.yield(.phaseStarted(.fullHashing))
-        var fullBuckets: [String: [URL]] = [:]
-        processed = 0
-        for url in partialCandidates {
-            if Task.isCancelled { return }
-            do {
-                let h = try hasher.fullHash(of: url)
-                fullBuckets[h, default: []].append(url)
-            } catch {
-                continue
+        let fullBuckets = await hashInParallel(
+            urls: partialCandidates,
+            hash: { try hasher.fullHash(of: $0) },
+            parallelism: parallelism,
+            progress: { processed, total in
+                continuation.yield(.phaseProgress(.fullHashing, scanned: processed, total: total))
             }
-            processed += 1
-            if processed % 20 == 0 {
-                continuation.yield(.phaseProgress(.fullHashing, scanned: processed, total: partialCandidates.count))
-            }
-        }
+        )
+        if Task.isCancelled { return }
         continuation.yield(.phaseCompleted(.fullHashing))
 
         // Emit groups of 2+
@@ -135,5 +131,81 @@ public actor DuplicateScanner {
             }
         }
         continuation.yield(.phaseStarted(.done))
+    }
+
+    /// Hashes every URL in parallel using up to `parallelism`
+    /// in-flight tasks. Errors are swallowed (we can't report them
+    /// per-file; failed files just don't appear in the result).
+    /// Returns a dict of `hash → [url]` preserving duplicates
+    /// (multiple files hashing to the same value accumulate in
+    /// the same array).
+    private static func hashInParallel(
+        urls: [URL],
+        hash: @escaping (URL) throws -> String,
+        parallelism: Int,
+        progress: (Int, Int) -> Void
+    ) async -> [String: [URL]] {
+        let total = urls.count
+        var buckets: [String: [URL]] = [:]
+        var processed = 0
+        let lock = NSLock()
+
+        await withTaskGroup(of: (String, URL)?.self) { group in
+            // Index-based submission so we can pull the next URL
+            // out of a counter as workers become free.
+            var nextIndex = 0
+            let submitLock = NSLock()
+
+            // Seed the group with `parallelism` tasks.
+            for _ in 0..<min(parallelism, urls.count) {
+                let idx = nextIndex
+                nextIndex += 1
+                let url = urls[idx]
+                group.addTask {
+                    do {
+                        let h = try hash(url)
+                        return (h, url)
+                    } catch {
+                        return nil
+                    }
+                }
+            }
+
+            for await result in group {
+                if Task.isCancelled {
+                    group.cancelAll()
+                    return
+                }
+                if let (h, url) = result {
+                    lock.lock()
+                    buckets[h, default: []].append(url)
+                    lock.unlock()
+                }
+                processed += 1
+                if processed % 50 == 0 {
+                    progress(processed, total)
+                }
+                // Pull the next URL if any remain.
+                submitLock.lock()
+                if nextIndex < urls.count {
+                    let idx = nextIndex
+                    nextIndex += 1
+                    let url = urls[idx]
+                    submitLock.unlock()
+                    group.addTask {
+                        do {
+                            let h = try hash(url)
+                            return (h, url)
+                        } catch {
+                            return nil
+                        }
+                    }
+                } else {
+                    submitLock.unlock()
+                }
+            }
+        }
+        progress(total, total)
+        return buckets
     }
 }
