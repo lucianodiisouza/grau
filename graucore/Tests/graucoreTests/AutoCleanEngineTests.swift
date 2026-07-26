@@ -55,7 +55,7 @@ final class AutoCleanEngineTests: XCTestCase {
 
     // MARK: - Condition evaluation
 
-    func test_evaluate_trashSizeCondition_firesAboveThreshold() {
+    func test_evaluate_trashSizeCondition_firesAboveThreshold() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -63,12 +63,12 @@ final class AutoCleanEngineTests: XCTestCase {
             action: .logSummary
         )
         let gauge = AutoCleanGaugeSnapshot(trashSizeBytes: 2_000_000_000)
-        let fired = runEval(engine, rules: [rule], gauge: gauge)
+        let fired = await runEval(engine, rules: [rule], gauge: gauge)
         XCTAssertEqual(fired.count, 1)
         XCTAssertEqual(fired.first?.rule.id, rule.id)
     }
 
-    func test_evaluate_trashSizeCondition_doesNotFireAtOrBelowThreshold() {
+    func test_evaluate_trashSizeCondition_doesNotFireAtOrBelowThreshold() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -76,18 +76,14 @@ final class AutoCleanEngineTests: XCTestCase {
             action: .logSummary
         )
         let gaugeEqual = AutoCleanGaugeSnapshot(trashSizeBytes: 1_000_000_000)
-        XCTAssertEqual(
-            runEval(engine, rules: [rule], gauge: gaugeEqual).count,
-            0
-        )
+        let equalResult = await runEval(engine, rules: [rule], gauge: gaugeEqual)
+        XCTAssertEqual(equalResult.count, 0)
         let gaugeBelow = AutoCleanGaugeSnapshot(trashSizeBytes: 999_999_999)
-        XCTAssertEqual(
-            runEval(engine, rules: [rule], gauge: gaugeBelow).count,
-            0
-        )
+        let belowResult = await runEval(engine, rules: [rule], gauge: gaugeBelow)
+        XCTAssertEqual(belowResult.count, 0)
     }
 
-    func test_evaluate_junkSizeCondition_requiresJunkSnapshot() {
+    func test_evaluate_junkSizeCondition_requiresJunkSnapshot() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -96,16 +92,18 @@ final class AutoCleanEngineTests: XCTestCase {
         )
         // Without a junk snapshot, the condition is unmet.
         let noSnapshot = AutoCleanGaugeSnapshot(trashSizeBytes: 0)
-        XCTAssertEqual(runEval(engine, rules: [rule], gauge: noSnapshot).count, 0)
+        let noResult = await runEval(engine, rules: [rule], gauge: noSnapshot)
+        XCTAssertEqual(noResult.count, 0)
         // With a junk snapshot above the threshold, the rule fires.
         let withSnapshot = AutoCleanGaugeSnapshot(
             trashSizeBytes: 0,
             lastJunkScanBytes: 200
         )
-        XCTAssertEqual(runEval(engine, rules: [rule], gauge: withSnapshot).count, 1)
+        let withResult = await runEval(engine, rules: [rule], gauge: withSnapshot)
+        XCTAssertEqual(withResult.count, 1)
     }
 
-    func test_evaluate_diskUsageCondition_firesAboveFraction() {
+    func test_evaluate_diskUsageCondition_firesAboveFraction() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -113,12 +111,14 @@ final class AutoCleanEngineTests: XCTestCase {
             action: .logSummary
         )
         let high = AutoCleanGaugeSnapshot(diskUsageFraction: 0.95)
-        XCTAssertEqual(runEval(engine, rules: [rule], gauge: high).count, 1)
+        let highResult = await runEval(engine, rules: [rule], gauge: high)
+        XCTAssertEqual(highResult.count, 1)
         let low = AutoCleanGaugeSnapshot(diskUsageFraction: 0.85)
-        XCTAssertEqual(runEval(engine, rules: [rule], gauge: low).count, 0)
+        let lowResult = await runEval(engine, rules: [rule], gauge: low)
+        XCTAssertEqual(lowResult.count, 0)
     }
 
-    func test_evaluate_timeOfDayCondition_firesOnlyAtExactTime() {
+    func test_evaluate_timeOfDayCondition_firesOnlyAtExactTime() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -131,21 +131,17 @@ final class AutoCleanEngineTests: XCTestCase {
         comps.second = 0
         let atThree = Calendar.current.date(from: comps)!
         let gauge = AutoCleanGaugeSnapshot(capturedAt: atThree)
-        XCTAssertEqual(
-            runEvalAt(engine, rules: [rule], gauge: gauge, now: atThree).count,
-            1
-        )
+        let atThreeResult = await runEvalAt(engine, rules: [rule], gauge: gauge, now: atThree)
+        XCTAssertEqual(atThreeResult.count, 1)
 
         comps.hour = 3; comps.minute = 1
         let justAfter = Calendar.current.date(from: comps)!
         let gauge2 = AutoCleanGaugeSnapshot(capturedAt: justAfter)
-        XCTAssertEqual(
-            runEvalAt(engine, rules: [rule], gauge: gauge2, now: justAfter).count,
-            0
-        )
+        let justAfterResult = await runEvalAt(engine, rules: [rule], gauge: gauge2, now: justAfter)
+        XCTAssertEqual(justAfterResult.count, 0)
     }
 
-    func test_evaluate_skipsDisabledRules() {
+    func test_evaluate_skipsDisabledRules() async {
         let engine = AutoCleanEngine()
         let rule = AutoCleanRule(
             name: "x",
@@ -154,7 +150,8 @@ final class AutoCleanEngineTests: XCTestCase {
             enabled: false
         )
         let gauge = AutoCleanGaugeSnapshot(trashSizeBytes: 999_999_999_999)
-        XCTAssertEqual(runEval(engine, rules: [rule], gauge: gauge).count, 0)
+        let result = await runEval(engine, rules: [rule], gauge: gauge)
+        XCTAssertEqual(result.count, 0)
     }
 
     func test_evaluate_respectsCooldown() async {
@@ -171,7 +168,7 @@ final class AutoCleanEngineTests: XCTestCase {
         XCTAssertEqual(fired.count, 0)
     }
 
-    func test_evaluate_multipleRules_returnsEachThatFires() {
+    func test_evaluate_multipleRules_returnsEachThatFires() async {
         let engine = AutoCleanEngine()
         let r1 = AutoCleanRule(
             name: "a",
@@ -193,7 +190,7 @@ final class AutoCleanEngineTests: XCTestCase {
             trashSizeBytes: 200,
             diskUsageFraction: 0.95
         )
-        let fired = runEval(engine, rules: [r1, r2, r3], gauge: gauge)
+        let fired = await runEval(engine, rules: [r1, r2, r3], gauge: gauge)
         XCTAssertEqual(fired.count, 2)
         let ids = fired.map(\.rule.id)
         XCTAssertTrue(ids.contains(r1.id))
@@ -284,19 +281,17 @@ final class AutoCleanEngineTests: XCTestCase {
 
     // MARK: - Helpers
 
+    /// Thin async wrapper around `engine.evaluate(rules:gauge:)` so
+    /// tests can call it without typing `await` at every site.
+    /// Kept async (not a closure that captures a var) to satisfy
+    /// `StrictConcurrency` in Package.swift — the GH CI runner
+    /// rejects mutating a captured `var` from inside a `Task`.
     private func runEval(
         _ engine: AutoCleanEngine,
         rules: [AutoCleanRule],
         gauge: AutoCleanGaugeSnapshot
-    ) -> [PendingAutoCleanAction] {
-        let semaphore = DispatchSemaphore(value: 0)
-        var out: [PendingAutoCleanAction] = []
-        Task {
-            out = await engine.evaluate(rules: rules, gauge: gauge)
-            semaphore.signal()
-        }
-        semaphore.wait()
-        return out
+    ) async -> [PendingAutoCleanAction] {
+        await engine.evaluate(rules: rules, gauge: gauge)
     }
 
     private func runEvalAt(
@@ -304,14 +299,7 @@ final class AutoCleanEngineTests: XCTestCase {
         rules: [AutoCleanRule],
         gauge: AutoCleanGaugeSnapshot,
         now: Date
-    ) -> [PendingAutoCleanAction] {
-        let semaphore = DispatchSemaphore(value: 0)
-        var out: [PendingAutoCleanAction] = []
-        Task {
-            out = await engine.evaluate(rules: rules, gauge: gauge, now: now)
-            semaphore.signal()
-        }
-        semaphore.wait()
-        return out
+    ) async -> [PendingAutoCleanAction] {
+        await engine.evaluate(rules: rules, gauge: gauge, now: now)
     }
 }
