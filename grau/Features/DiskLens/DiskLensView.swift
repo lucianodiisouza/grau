@@ -15,6 +15,18 @@ struct DiskLensView: View {
     @State private var currentPath: URL = URL(fileURLWithPath: "/")
     @State private var nodes: [DiskTreeNode] = []
     @State private var isLoading = false
+    @State private var viewMode: ViewMode = .list
+
+    enum ViewMode: String, CaseIterable, Identifiable {
+        case list, treemap
+        var id: String { rawValue }
+        var systemImage: String {
+            switch self {
+            case .list:    "list.bullet"
+            case .treemap: "square.grid.3x3.fill"
+            }
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,6 +45,15 @@ struct DiskLensView: View {
             Text("Disk Lens")
                 .font(.title2.weight(.semibold))
             Spacer()
+            Picker("View", selection: $viewMode) {
+                ForEach(ViewMode.allCases) { mode in
+                    Image(systemName: mode.systemImage)
+                        .tag(mode)
+                        .help(mode == .list ? "List" : "Treemap")
+                }
+            }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 110)
             Button {
                 Task {
                     currentPath = URL(fileURLWithPath: "/")
@@ -66,6 +87,19 @@ struct DiskLensView: View {
                     title: "Empty folder",
                     message: "Nothing to show here. Try a different path."
                 )
+            } else if viewMode == .treemap {
+                DiskTreemapView(
+                    nodes: nodes,
+                    onSelect: { node in
+                        currentPath = node.url
+                        Task { await reload() }
+                    },
+                    onReveal: { node in
+                        NSWorkspace.shared.activateFileViewerSelecting([node.url])
+                    }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(Spacing.md)
             } else {
                 nodeList
             }

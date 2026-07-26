@@ -39,6 +39,7 @@
 		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
 		C1F6E4065EE1F1AFDADBED2F /* TrashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E498C8615DD96573423C4270 /* TrashViewModel.swift */; };
 		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
+		EEE4E459892740FB675B3900 /* DiskTreemapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99AD415F624B681BDD2527D /* DiskTreemapView.swift */; };
 		F68540B3F2CA8E4F8E2B7844 /* GrauColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7ED37B458174DC5ABDC673 /* GrauColors.xcassets */; };
 		F9E2ECE173F9227914B2258D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01BAF7D1E9F6717DB3B42324 /* Assets.xcassets */; };
 		FA9E4E31716F6F0F636842F2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */; };
@@ -85,6 +86,7 @@
 		E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		E7B13EF7229DDAAF0784C0DA /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		F3773B175B56A631710DD28D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		F99AD415F624B681BDD2527D /* DiskTreemapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTreemapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				47D0B95B57C92443A397A6E8 /* DiskLensView.swift */,
+				F99AD415F624B681BDD2527D /* DiskTreemapView.swift */,
 			);
 			path = DiskLens;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				5A33A61BBC5956B8DD99BF93 /* DevModeView.swift in Sources */,
 				247BF2DD75411253D5A42674 /* DevModeViewModel.swift in Sources */,
 				D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */,
+				EEE4E459892740FB675B3900 /* DiskTreemapView.swift in Sources */,
 				352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */,
 				6FE189F0761B074193308825 /* EmptyStateView.swift in Sources */,
 				75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */,
@@ -523,7 +527,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
@@ -607,7 +611,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
