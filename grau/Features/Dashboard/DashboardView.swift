@@ -2,16 +2,18 @@
 //  DashboardView.swift
 //  grau
 //
-//  Home screen. Vertical stack of cards. See docs/DESIGN.md § 2.2.
-//  Real data wiring lands in Phase 1 (Task 1.7) when the storage
-//  card reads from VolumeMonitor and the last-scan card reads
-//  ~/.grau/state.json.
+//  Home screen. Vertical stack of cards. Reads from
+//  DashboardViewModel (storage via VolumeMonitor, trash via
+//  TrashInfoReader, last scan via ~/.grau/state.json).
+//  See docs/DESIGN.md § 2.2.
 //
 
 import SwiftUI
+import graucore
 
 struct DashboardView: View {
     @Environment(AppViewModel.self) private var appVM
+    @State private var viewModel = DashboardViewModel()
 
     var body: some View {
         ScrollView {
@@ -29,6 +31,12 @@ struct DashboardView: View {
             .padding(Spacing.xxl)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .task {
+            await viewModel.refresh()
+        }
+        .refreshable {
+            await viewModel.refresh()
+        }
     }
 
     // MARK: - Sections
@@ -43,6 +51,7 @@ struct DashboardView: View {
         }
     }
 
+    @ViewBuilder
     private var storageCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.md) {
@@ -50,30 +59,44 @@ struct DashboardView: View {
                     Text("Storage")
                         .font(.headline)
                     Spacer()
-                    Pill("Scaffold data", tone: .neutral)
+                    if viewModel.storageTotal.bytes > 0 {
+                        Pill(
+                            "\(Int(viewModel.storageFraction * 100))% used",
+                            tone: viewModel.storageFraction >= 0.9 ? .danger : .info
+                        )
+                    }
                 }
-                StorageBar(used: fakeUsed, total: fakeTotal)
-                HStack {
-                    Text(fakeFreeText + " free")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Text(fakeUsedText + " of " + fakeTotalText)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                if viewModel.storageTotal.bytes > 0 {
+                    StorageBar(
+                        used: viewModel.storageUsed.bytes,
+                        total: viewModel.storageTotal.bytes
+                    )
+                    HStack {
+                        Text(viewModel.storageFree.humanReadable + " free")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("\(viewModel.storageUsed.humanReadable) of \(viewModel.storageTotal.humanReadable)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
                 }
             }
         }
     }
 
+    @ViewBuilder
     private var trashCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("Trash")
                     .font(.headline)
-                Text("8 items")
+                Text(trashItemCountText)
                     .font(.title2)
-                Text("142 MB")
+                Text(viewModel.trashSize.humanReadable)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Spacer().frame(height: Spacing.sm)
@@ -86,34 +109,71 @@ struct DashboardView: View {
         }
     }
 
+    private var trashItemCountText: String {
+        let n = viewModel.trashItemCount
+        return n == 1 ? "1 item" : "\(n) items"
+    }
+
+    @ViewBuilder
     private var lastScanCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("Last junk scan")
                     .font(.headline)
-                Text("Never")
-                    .font(.title2)
-                Text("Phase 1 will wire this to ~/.grau/state.json")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                if let last = viewModel.lastJunkScan {
+                    Text(last.totalBytes > 0
+                         ? ByteSize(bytes: last.totalBytes).humanReadable
+                         : "0 B")
+                        .font(.title2)
+                    Text("\(last.itemCount) item(s) · \(last.finishedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Never")
+                        .font(.title2)
+                    Text("Run a scan from the Clean tab")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
                 Spacer().frame(height: Spacing.sm)
                 PrimaryButton("Scan now", systemImage: "magnifyingglass") {
-                    // Wired in Phase 1 Task 1.7
+                    appVM.selectedSection = .clean
                 }
             }
         }
     }
 
+    @ViewBuilder
     private var quickActions: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.md) {
                 Text("Quick actions")
                     .font(.headline)
                 HStack(spacing: Spacing.md) {
-                    quickActionButton("Scan Junk", systemImage: "trash", disabled: false)
-                    quickActionButton("Find Duplicates", systemImage: "doc.on.doc", disabled: true)
-                    quickActionButton("View Disk", systemImage: "circle.grid.3x3", disabled: true)
-                    quickActionButton("Open Dev Mode", systemImage: "hammer", disabled: true)
+                    quickActionButton(
+                        "Scan Junk",
+                        systemImage: "trash",
+                        disabled: false,
+                        action: { appVM.selectedSection = .clean }
+                    )
+                    quickActionButton(
+                        "Find Duplicates",
+                        systemImage: "doc.on.doc",
+                        disabled: false,
+                        action: { appVM.selectedSection = .duplicates }
+                    )
+                    quickActionButton(
+                        "View Disk",
+                        systemImage: "circle.grid.3x3",
+                        disabled: false,
+                        action: { appVM.selectedSection = .diskLens }
+                    )
+                    quickActionButton(
+                        "Open Dev Mode",
+                        systemImage: "hammer",
+                        disabled: !appVM.devModeEnabled,
+                        action: { appVM.selectedSection = .devMode }
+                    )
                 }
             }
         }
@@ -123,10 +183,11 @@ struct DashboardView: View {
     private func quickActionButton(
         _ title: String,
         systemImage: String,
-        disabled: Bool
+        disabled: Bool,
+        action: @escaping () -> Void
     ) -> some View {
         Button {
-            // Wired in the relevant phase
+            action()
         } label: {
             VStack(spacing: Spacing.xs) {
                 Image(systemName: systemImage)
@@ -142,19 +203,6 @@ struct DashboardView: View {
         .opacity(disabled ? 0.4 : 1.0)
     }
 
-    // MARK: - Fake data (replaced in Phase 1)
-
-    private let fakeUsed: Int64 = 237_400_000_000
-    private let fakeTotal: Int64 = 500_100_000_000
-    private var fakeFreeText: String {
-        ByteCountFormatter.string(fromByteCount: fakeTotal - fakeUsed, countStyle: .file)
-    }
-    private var fakeUsedText: String {
-        ByteCountFormatter.string(fromByteCount: fakeUsed, countStyle: .file)
-    }
-    private var fakeTotalText: String {
-        ByteCountFormatter.string(fromByteCount: fakeTotal, countStyle: .file)
-    }
     private var timeOfDay: String {
         let hour = Calendar.current.component(.hour, from: .now)
         switch hour {
