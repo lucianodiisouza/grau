@@ -22,14 +22,23 @@ import Sparkle
 
 @main
 struct grauApp: App {
-    @State private var appVM = AppViewModel()
-    @State private var notificationCoordinator = NotificationCoordinator()
+    @State private var appVM: AppViewModel
+    @State private var notificationCoordinator: NotificationCoordinator
 
     /// Sparkle 2.x standard updater. Started immediately so the
     /// feed is checked on the first launch after install.
     private let updaterController: SPUStandardUpdaterController
 
     init() {
+        // Explicit init is required because AppViewModel and
+        // NotificationCoordinator are @MainActor — Swift's
+        // property-initializer context isn't, so the default
+        // `@State private var x = X()` form errors under
+        // StrictConcurrency (which is enabled in project.yml).
+        // `App.init()` is implicitly @MainActor, so it's safe to
+        // construct the MainActor-isolated view models here.
+        _appVM = State(wrappedValue: AppViewModel())
+        _notificationCoordinator = State(wrappedValue: NotificationCoordinator())
         // startingUpdater: true → SPUUpdater is created and the
         // first feed check is queued. We do NOT pass a custom
         // updater delegate; the default behavior is fine for v1.1.

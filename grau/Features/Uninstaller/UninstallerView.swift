@@ -243,6 +243,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var confirmSheet: some View {
         VStack(spacing: Spacing.lg) {
             Spacer()
@@ -265,7 +266,13 @@ struct UninstallerView: View {
             HStack {
                 SecondaryButton("Cancel") { viewModel.cancelUninstall() }
                 DestructiveButton("Uninstall", systemImage: "trash") {
-                    Task { await viewModel.confirmUninstall() }
+                    // Capture `viewModel` explicitly (not `self`).
+                    // The View struct is non-Sendable; capturing the
+                    // @MainActor viewModel directly avoids the
+                    // "non-sendable capture in @Sendable closure"
+                    // error under StrictConcurrency.
+                    let vm = viewModel
+                    Task { await vm.confirmUninstall() }
                 }
             }
         }
@@ -273,6 +280,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func successSheet(_ outcome: Uninstaller.ExecuteOutcome) -> some View {
         VStack(spacing: Spacing.lg) {
             Spacer()
