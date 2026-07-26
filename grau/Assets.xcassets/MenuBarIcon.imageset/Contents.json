@@ -1,8 +1,10 @@
 {
   "images" : [
     {
-      "filename" : "icon_512.png",
-      "idiom" : "mac"
+      "filename" : "icon_36.png",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "18x18"
     }
   ],
   "info" : {
