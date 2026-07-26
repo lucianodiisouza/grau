@@ -6,11 +6,66 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 6b (1.1)
-- Sparkle self-update with EdDSA signing
-- Homebrew Cask (`brew install --cask grau`)
-- Treemap visualization for Disk Lens (deferred from v1.0)
-- Per-file cancellation in Duplicates scanner (deferred from v1.0)
+### Planned for Phase 7 (1.2)
+- Treemap visualization for Disk Lens
+- Per-file cancellation in Duplicates scanner
+- In-app trash restore filtering (by kind, by date)
+
+## [1.1.0] — 2026-07-26
+
+The first minor release. Adds the first third-party runtime
+dependency (Sparkle 2.9.4) and an in-app trash-restore view.
+
+### Highlights
+- 🔄 **Self-update via Sparkle.** `Check for Updates…` in the
+  app menu. The feed is hosted at
+  `https://lucianodiisouza.github.io/grau/appcast.xml`. The
+  EdDSA public key is in `Info.plist`; the matching private
+  key lives in the maintainer's keychain.
+- 🍺 **`brew install --cask grau`.** Homebrew Cask formula in
+  `homebrew-cask/grau.rb` (sha256 to be filled on each release).
+- ↩️ **In-app trash restore.** The new "Trash" sidebar item
+  shows every past clean/uninstall/duplicates operation by
+  reading `~/.grau/trash-manifests/*.json`. One click restores
+  the whole batch (or per-item failures are listed).
+
+### graucore
+- **`FS/TrashRestore`** — `actor`. `listManifests()`,
+  `manifest(id:)`, `restore(manifestID:)`. Restores by moving
+  each item from `~/.Trash/<trashRelativePath>` back to its
+  `originalPath`. Skips if the original path is now occupied.
+- Test count: **161** (was 155 in v1.0).
+
+### grau
+- New sidebar item: **Trash** (system image
+  `arrow.uturn.backward.circle`).
+- `TrashView` + `TrashViewModel` — list of manifests with
+  one-click "Restore all" per card.
+- `grauApp.swift` — `SPUStandardUpdaterController` started
+  in `init`. A "Check for Updates…" item appears under the
+  app menu and uses Sparkle's standard NSAlert flow.
+
+### Tooling
+- `scripts/make-appcast.sh` — wraps Sparkle's
+  `generate_appcast` to produce a fresh `dist/appcast.xml`
+  (or `appcast-beta.xml` with `--channel beta`).
+- `homebrew-cask/grau.rb` — Homebrew Cask formula.
+
+### Files
+- New: `grau/Features/Trash/{TrashView,TrashViewModel}.swift`
+- New: `graucore/Sources/graucore/FS/TrashRestore.swift`
+- New: `graucore/Tests/graucoreTests/TrashRestoreTests.swift`
+- New: `homebrew-cask/grau.rb`
+- New: `scripts/make-appcast.sh`
+- Modified: `project.yml` (Sparkle package), `grauApp.swift`
+  (updater controller + menu), `grau/Info.plist`
+  (SUFeedURL/SUPublicEDKey/SUEnableAutomaticChecks),
+  `grau/AppViewModel.swift` (new `.trash` case).
+
+### Known limitations (still deferred to 1.2+)
+- Disk Lens has no treemap visualization (Top-N list only)
+- Duplicates scanner is per-phase-parallel, not per-file-parallel
+- No per-kind / per-date filter in the Trash view
 
 ## [1.0.0] — 2026-07-26
 

@@ -271,4 +271,41 @@ _(filled in when Phase 6a lands)_
 
 ## Phase 6b — Polish pt 2 (1.1)
 
-_(filled in when Phase 6b lands)_
+### Self-update (Sparkle)
+
+- [ ] App menu → Grau → "Check for Updates…" is present and
+      tappable.
+- [ ] With no update available, Sparkle shows the "You're up
+      to date" alert.
+- [ ] SUFeedURL in `Info.plist` points at
+      `https://lucianodiisouza.github.io/grau/appcast.xml`.
+- [ ] SUPublicEDKey matches the EdDSA keypair in the dev's
+      keychain.
+- [ ] Sparkle is listed as a Swift package dep in
+      `project.yml` (it was added in Phase 6b — v1.0 had no
+      third-party runtime deps).
+
+### Homebrew Cask
+
+- [ ] `homebrew-cask/grau.rb` parses (`brew audit`).
+- [ ] After filling in sha256 + version, `brew install
+      --cask <local-rb>` installs Grau and it launches.
+
+### Trash restore (in-app)
+
+- [ ] New "Trash" sidebar item appears between "Dev Mode" and
+      "Settings".
+- [ ] On a fresh install (no past cleans), the Trash tab
+      shows the "No trashed items yet" empty state.
+- [ ] After running a clean, the Trash tab lists one entry
+      per manifest with kind, timestamp, total size, and
+      item count.
+- [ ] "Restore all" on an item moves every file back to its
+      `originalPath`. The card flips to "Restored N item(s)"
+      with a green check.
+- [ ] If the original path is now occupied, that item is
+      reported as a failure (orange warning + path snippet)
+      but the rest of the batch still restores.
+- [ ] `~/.grau/trash-manifests/<timestamp>-<kind>.json` files
+      are still readable after restore (we don't delete the
+      manifest on success — that lets the user retry).

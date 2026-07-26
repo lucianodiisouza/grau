@@ -3,7 +3,7 @@
 > A free, open-source, native macOS utility for cleaning, inspecting, and managing your Mac's storage.
 > CleanMyMac for people who'd rather not pay $40/year.
 
-**Status:** ✅ **v1.0.0** (stable). All five features functional. Self-update via DMG; Sparkle + Homebrew Cask land in v1.1.
+**Status:** ✅ **v1.1.0** (stable). All five features functional. Self-update via Sparkle. Homebrew Cask formula shipped.
 
 ![Grau icon](grau/Assets.xcassets/AppIcon.appiconset/icon_1024.png)
 
@@ -14,6 +14,7 @@
 - 🔍 **Disk lens** — visualize your disk as a Top-N list. Drill down to see what's eating space.
 - 🪞 **Duplicates finder** — find byte-identical files anywhere. 3-phase pipeline (size → partial hash → full SHA-256). Defaults to keeping the oldest copy.
 - 🛠 **Dev mode** — track `node_modules`, 16 package manager caches, Docker, iOS Simulators, Xcode DerivedData, and archives. Hidden behind a Settings toggle.
+- ↩️ **Trash restore** — every clean writes a JSON manifest. The in-app Trash view shows past operations and lets you restore a whole batch in one click.
 
 ## First principles
 
@@ -25,13 +26,24 @@
 
 ## Install
 
-Download the latest DMG from the [Releases](../../releases) page. Open the DMG, drag `Grau.app` to `/Applications`, and launch. The app requests Full Disk Access on first run; granting it unlocks System Caches and Logs.
+```bash
+# Homebrew (recommended)
+brew install --cask grau
 
-> v1.1 will add `brew install --cask grau` and Sparkle self-update.
+# Or: download the latest DMG from the Releases page and
+# drag Grau.app to /Applications.
+```
+
+After install, launch Grau and grant Full Disk Access (System
+Settings → Privacy & Security → Full Disk Access). Grau uses
+this to read System Caches and Logs.
+
+Updates are delivered automatically via Sparkle. Use the
+**Grau → Check for Updates…** menu item to check on demand.
 
 ## Build
 
-Native Swift + SwiftUI. macOS 14+ (Sonoma) and up. Apple Silicon and Intel. **No third-party runtime dependencies in v1** (Sparkle is added in v1.1).
+Native Swift + SwiftUI. macOS 14+ (Sonoma) and up. Apple Silicon and Intel. One third-party runtime dep in v1.1: **Sparkle** for self-update.
 
 ```bash
 # Prereqs: Xcode 15+, Swift 5.9+, xcodegen
@@ -44,7 +56,7 @@ cd grau
 # Generate the Xcode project
 xcodegen generate
 
-# Run the graucore unit tests (155 tests)
+# Run the graucore unit tests (161 tests)
 cd graucore && swift test
 
 # Build the macOS app
