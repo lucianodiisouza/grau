@@ -11,6 +11,7 @@
 		1BF5F52BDB0EE8AD11CB23AC /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01378AC795CC46D7C1B99EA3 /* MenuBarContentView.swift */; };
 		2246F1624685C2F0E2911938 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E3110DB98F94063A49DC04 /* MainWindowView.swift */; };
 		247BF2DD75411253D5A42674 /* DevModeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A75F9231A02B49124DBEC9 /* DevModeViewModel.swift */; };
+		2AF34B5496424DD07B5F364B /* AutomationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C89C9BB4C6F659F7E3995F /* AutomationViewModel.swift */; };
 		2C9ACF9A889E799C800EE7F8 /* MenuBarState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB62F4D0CEF3A9222022EA11 /* MenuBarState.swift */; };
 		31F15957E73824185D8B0E73 /* graucore in Frameworks */ = {isa = PBXBuildFile; productRef = 4EBFAAE07D91F3FD2E9146C2 /* graucore */; };
 		352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876E717308A63E4163433FF /* DuplicatesView.swift */; };
@@ -27,6 +28,7 @@
 		75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C635470D794F17CEB27903B /* ErrorStateView.swift */; };
 		7EF47531095CEB52CE7DE119 /* StorageBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092CF365CA4C30B4DED1FD37 /* StorageBar.swift */; };
 		84D049D6C3A868BD5123D111 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 38135049169D35D8B30CDDD0 /* Sparkle */; };
+		870BB561A161D01F40828188 /* AutomationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CEDCF2DB3D082B18B207CD /* AutomationView.swift */; };
 		932AD4D9FA4339CDF44D1525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C1C27706B4AC3AF1291EB5 /* Spacing.swift */; };
 		9397B47B63866B0434F764AD /* UninstallerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */; };
 		93D9139F6E0BECE2B970C5AB /* PermissionPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9627DD44B8F1E66B8D1554 /* PermissionPrimerView.swift */; };
@@ -72,10 +74,12 @@
 		73E8DFD77351EF0D6B75ABD8 /* grauApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = grauApp.swift; sourceTree = "<group>"; };
 		781BCABAEBDFD44AB6C7B30A /* grau.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = grau.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81A75F9231A02B49124DBEC9 /* DevModeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevModeViewModel.swift; sourceTree = "<group>"; };
+		84CEDCF2DB3D082B18B207CD /* AutomationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationView.swift; sourceTree = "<group>"; };
 		8876E717308A63E4163433FF /* DuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicatesView.swift; sourceTree = "<group>"; };
 		89289E3ACF084A911240BE9A /* UninstallerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerViewModel.swift; sourceTree = "<group>"; };
 		8A932159D5DF281913EF328D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		8CB658C5236E51B314B5435D /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
+		98C89C9BB4C6F659F7E3995F /* AutomationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationViewModel.swift; sourceTree = "<group>"; };
 		A312BFF381A661E940AA59C0 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		A3B801EEF5BB68749E896929 /* graucore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = graucore; path = graucore; sourceTree = SOURCE_ROOT; };
 		A3BB8F4004008FEE12868F34 /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
@@ -111,6 +115,7 @@
 		0D9042A0619E127E0D117AEA /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				8D31DED0BA86D16746833D4D /* Automation */,
 				139B2E8D2C57A87480F07042 /* Dashboard */,
 				B268E5C958669875CB1E1ECA /* DevMode */,
 				74741B743382EBB157A2A947 /* DiskLens */,
@@ -251,6 +256,15 @@
 				6D7D5782046DEB69EFA83EC8 /* OnboardingView.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		8D31DED0BA86D16746833D4D /* Automation */ = {
+			isa = PBXGroup;
+			children = (
+				84CEDCF2DB3D082B18B207CD /* AutomationView.swift */,
+				98C89C9BB4C6F659F7E3995F /* AutomationViewModel.swift */,
+			);
+			path = Automation;
 			sourceTree = "<group>";
 		};
 		913ECEC7C0716E4032B30232 /* MainWindow */ = {
@@ -414,6 +428,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FFB3F5EFAA856340615444C1 /* AppViewModel.swift in Sources */,
+				870BB561A161D01F40828188 /* AutomationView.swift in Sources */,
+				2AF34B5496424DD07B5F364B /* AutomationViewModel.swift in Sources */,
 				54A2759B7ED023F5B63DF205 /* CardView.swift in Sources */,
 				BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */,
 				462C4F3DD290FD3784500BE7 /* DashboardViewModel.swift in Sources */,
@@ -539,7 +555,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};
@@ -623,7 +639,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.6.0;
+				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.grau.mac;
 				SDKROOT = macosx;
 			};

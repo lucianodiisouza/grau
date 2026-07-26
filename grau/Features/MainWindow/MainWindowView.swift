@@ -45,6 +45,7 @@ struct MainWindowView: View {
         case .devMode:      DevModeView()
         case .trash:        TrashView()
         case .notifications: NotificationCenterView()
+        case .automation:   AutomationView()
         case .settings:     SettingsView()
         }
     }

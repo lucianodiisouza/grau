@@ -9,19 +9,27 @@
 //  v1.4 feature. The user can review past alerts and clear the
 //  log. The sidebar item is "Notifications" (bell SF Symbol).
 //
+//  v1.7 (Phase 12.3) adds a "Rule status" header card above the
+//  log that shows each rule's current cooldown state.
+//
 
 import SwiftUI
 import graucore
 
 struct NotificationCenterView: View {
     @State private var viewModel = NotificationCenterViewModel()
+    @State private var notificationCoordinator = NotificationCoordinator()
+    @State private var refreshTick: Int = 0
 
     var body: some View {
         VStack(spacing: 0) {
             toolbar
             Divider()
+            ruleStatusCard
+            Divider()
             content
         }
+        .onAppear { refreshTick &+= 1 }
     }
 
     @ViewBuilder
@@ -35,7 +43,10 @@ struct NotificationCenterView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button {
-                Task { await viewModel.refresh() }
+                Task {
+                    await viewModel.refresh()
+                    refreshTick &+= 1
+                }
             } label: {
                 Label("Refresh", systemImage: "arrow.clockwise")
             }
@@ -47,6 +58,41 @@ struct NotificationCenterView: View {
                     Label("Clear", systemImage: "trash")
                 }
                 .buttonStyle(.borderless)
+            }
+        }
+        .padding(Spacing.lg)
+    }
+
+    @ViewBuilder
+    private var ruleStatusCard: some View {
+        // Touch refreshTick so this view re-evaluates on each refresh.
+        let _ = refreshTick
+        CardView {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Rule status")
+                    .font(.headline)
+                ForEach(NotificationRuleID.allCases, id: \.self) { rule in
+                    HStack(spacing: Spacing.sm) {
+                        Image(systemName: iconFor(ruleID: rule.rawValue))
+                            .foregroundStyle(tintFor(ruleID: rule.rawValue))
+                            .frame(width: 20)
+                        Text(rule.displayName)
+                        Spacer()
+                        if let endsAt = notificationCoordinator.cooldownEndsAt(rule) {
+                            Text("Cooling down until \(endsAt.formatted(date: .omitted, time: .shortened))")
+                                .font(.caption)
+                                .foregroundStyle(Color("grau-warning"))
+                        } else if !notificationCoordinator.canFire(rule) {
+                            Text("Disabled")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("Ready")
+                                .font(.caption)
+                                .foregroundStyle(Color("grau-success"))
+                        }
+                    }
+                }
             }
         }
         .padding(Spacing.lg)

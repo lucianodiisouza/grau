@@ -63,6 +63,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
     case devMode
     case trash
     case notifications
+    case automation
     case settings
 
     public var id: String { rawValue }
@@ -77,6 +78,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
         case .devMode:         "Dev Mode"
         case .trash:           "Trash"
         case .notifications:   "Notifications"
+        case .automation:      "Automation"
         case .settings:        "Settings"
         }
     }
@@ -91,6 +93,7 @@ public enum AppSection: String, CaseIterable, Identifiable, Hashable {
         case .devMode:         "hammer"
         case .trash:           "arrow.uturn.backward.circle"
         case .notifications:   "bell"
+        case .automation:      "wand.and.stars"
         case .settings:        "gear"
         }
     }
