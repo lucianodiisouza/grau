@@ -2,15 +2,84 @@
 //  ManifestStore.swift
 //  graucore
 //
-//  TODO(Phase 1): implement. See docs/ARCHITECTURE.md § 4 and
-//  docs/TASKS.md for the per-phase acceptance criteria.
-//
-//  Stub created in Task 0.3 (scaffold) so the package builds and the
-//  test target runs. Real implementation lands in the named phase.
+//  JSON read/write of ~/.grau/ files: state.json, size-cache.json,
+//  trash-manifests/*.json. See docs/ARCHITECTURE.md § 6.2.
 //
 
 import Foundation
 
-/// Placeholder namespace so the file compiles. Replace with the real
-/// type when the module is implemented.
-public enum ManifestStorePlaceholder {}
+public struct ManifestStore: Sendable {
+
+    public init() {}
+
+    /// `~/.grau/`. Created on first use.
+    public static var grauDirectory: URL {
+        FileManager.default
+            .homeDirectoryForCurrentUser
+            .appendingPathComponent(".grau", isDirectory: true)
+    }
+
+    /// `~/.grau/state.json`.
+    public static var stateFile: URL {
+        grauDirectory.appendingPathComponent("state.json")
+    }
+
+    /// `~/.grau/size-cache.json`.
+    public static var sizeCacheFile: URL {
+        grauDirectory.appendingPathComponent("size-cache.json")
+    }
+
+    /// Ensures `~/.grau/` exists.
+    public static func ensureGrauDirectory() throws {
+        try FileManager.default.createDirectory(
+            at: grauDirectory,
+            withIntermediateDirectories: true
+        )
+    }
+
+    // MARK: - Generic JSON
+
+    public func read<T: Decodable>(_ type: T.Type, from url: URL) throws -> T? {
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: url.path) else { return nil }
+        let data = try Data(contentsOf: url)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(T.self, from: data)
+    }
+
+    public func write<T: Encodable>(_ value: T, to url: URL) throws {
+        try Self.ensureGrauDirectory()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(value)
+        try data.write(to: url, options: .atomic)
+    }
+}
+
+// MARK: - Last-scan summary
+
+public struct LastScanSummary: Codable, Sendable, Equatable {
+    public let kind: String            // "junk" | "uninstall" | "duplicates" | ...
+    public let totalBytes: Int64
+    public let itemCount: Int
+    public let finishedAt: Date
+
+    public init(kind: String, totalBytes: Int64, itemCount: Int, finishedAt: Date) {
+        self.kind = kind
+        self.totalBytes = totalBytes
+        self.itemCount = itemCount
+        self.finishedAt = finishedAt
+    }
+}
+
+public struct StateFile: Codable, Sendable, Equatable {
+    public var lastJunkScan: LastScanSummary?
+    public var lastClean: LastScanSummary?
+
+    public init(lastJunkScan: LastScanSummary? = nil, lastClean: LastScanSummary? = nil) {
+        self.lastJunkScan = lastJunkScan
+        self.lastClean = lastClean
+    }
+}
