@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- 🐛 **App no longer crashes on launch with "Unexpectedly found nil
+  while implicitly unwrapping an Optional value" at `grauApp.swift:62`.**
+  The Dock-icon feature was setting `NSApp.setActivationPolicy(.accessory)`
+  from inside `App.init()`, but the `NSApp` global is still nil at that
+  point in the SwiftUI lifecycle — only `NSApplication.shared` is
+  guaranteed to be safe. Swapped the call to use the shared singleton;
+  the `NSApp` references inside the "Open Grau" / "About" menu
+  closures are unchanged because those fire after the app is up.
 - 🐛 **Uninstaller now shows the real bundle size for every app.**
   The left sidebar was previously only listing name + version, so
   apps like Xcode (~30 GB) looked identical to a 50 MB utility. The

@@ -25,6 +25,14 @@ struct grauApp: App {
     @State private var appVM: AppViewModel
     @State private var notificationCoordinator: NotificationCoordinator
 
+    /// We need `openWindow` inside `commands { ... }` to wire the
+    /// "Open Grau" menu item (Cmd+0) to actually open the main
+    /// window. `openWindow` is only available via `@Environment`,
+    /// which can only be read from inside `body`. We bridge it
+    /// through a single-use helper that captures the value when
+    /// `body` is first evaluated.
+    @Environment(\.openWindow) private var openWindow
+
     /// Sparkle 2.x standard updater. Started immediately so the
     /// feed is checked on the first launch after install.
     private let updaterController: SPUStandardUpdaterController
@@ -47,6 +55,17 @@ struct grauApp: App {
             updaterDelegate: nil,
             userDriverDelegate: nil
         )
+        // Start as an accessory app (no Dock icon) so Grau behaves
+        // like a menu-bar app from the moment it launches. The Dock
+        // icon is promoted to `.regular` only when a window is
+        // actually opened — see DockIconController.
+        //
+        // We call `NSApplication.shared` (not the `NSApp` global)
+        // because `NSApp` is still nil at this point in the SwiftUI
+        // `App.init()` lifecycle. Touching `NSApplication.shared`
+        // initializes the singleton and returns it. The `NSApp`
+        // global will be populated by the time `body` is evaluated.
+        NSApplication.shared.setActivationPolicy(.accessory)
     }
 
     var body: some Scene {
@@ -92,7 +111,13 @@ struct grauApp: App {
             }
             CommandGroup(after: .newItem) {
                 Button("Open Grau") {
+                    // Promote to .regular before showing the window so
+                    // the Dock icon and the window appear together,
+                    // without a one-frame flicker. DockIconController
+                    // takes over the policy from this point on.
+                    NSApp.setActivationPolicy(.regular)
                     NSApp.activate(ignoringOtherApps: true)
+                    openWindow(id: "main")
                 }
                 .keyboardShortcut("0", modifiers: .command)
             }
