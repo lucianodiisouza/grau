@@ -18,6 +18,7 @@ struct DuplicatesView: View {
     @State private var selectedFileIDs: Set<URLHashID> = []
     @State private var phaseLabel: String = "Idle"
     @State private var isScanning = false
+    @State private var wasCancelled = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -37,6 +38,13 @@ struct DuplicatesView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             if isScanning {
+                Button {
+                    Task { await scanner.cancel() }
+                } label: {
+                    Label("Stop", systemImage: "stop.circle")
+                }
+                .buttonStyle(.borderless)
+                .tint(.red)
                 ProgressView().controlSize(.small)
             } else {
                 Button {
@@ -150,6 +158,7 @@ struct DuplicatesView: View {
 
     private func scan() async {
         isScanning = true
+        wasCancelled = false
         phaseLabel = "Sizing…"
         groups = []
         selectedFileIDs = []
@@ -170,6 +179,13 @@ struct DuplicatesView: View {
                     selectedFileIDs.insert(URLHashID(url))
                 }
             }
+        }
+        // Detect cancellation: the stream ended with a partial set
+        // of groups AND we don't see .done. The simplest signal is
+        // an empty groups list AND the scan didn't reach Full hash.
+        if phaseLabel.contains("Partial hash") || phaseLabel.contains("Sizing") {
+            wasCancelled = true
+            phaseLabel = "Cancelled"
         }
         isScanning = false
     }

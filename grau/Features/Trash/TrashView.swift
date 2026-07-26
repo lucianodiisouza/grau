@@ -56,15 +56,86 @@ struct TrashView: View {
                 message: "Run a clean, uninstall, or duplicate-trash to see entries here."
             )
         } else {
-            ScrollView {
-                LazyVStack(spacing: Spacing.md) {
-                    ForEach(viewModel.manifests) { summary in
-                        manifestCard(summary)
+            VStack(spacing: 0) {
+                filterBar
+                if viewModel.filteredManifests.isEmpty {
+                    EmptyStateView(
+                        icon: "line.3.horizontal.decrease.circle",
+                        title: "No matches",
+                        message: "No manifests match the current filter. Tap Clear to reset."
+                    )
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: Spacing.md) {
+                            ForEach(viewModel.filteredManifests) { summary in
+                                manifestCard(summary)
+                            }
+                        }
+                        .padding(Spacing.lg)
                     }
                 }
-                .padding(Spacing.lg)
             }
         }
+    }
+
+    @ViewBuilder
+    private var filterBar: some View {
+        HStack(spacing: Spacing.sm) {
+            Menu {
+                Button("All kinds") { viewModel.kindFilter = nil }
+                Divider()
+                ForEach(viewModel.availableKinds, id: \.self) { kind in
+                    Button(kindLabel(kind)) { viewModel.kindFilter = kind }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                    Text(viewModel.kindFilter.map(kindLabel) ?? "All kinds")
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                }
+                .font(.callout)
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+
+            if viewModel.dateFrom != nil || viewModel.dateTo != nil {
+                Text(dateFilterLabel)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            if hasActiveFilter {
+                Button {
+                    viewModel.clearFilters()
+                } label: {
+                    Label("Clear", systemImage: "xmark.circle")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .padding(.horizontal, Spacing.lg)
+        .padding(.vertical, Spacing.sm)
+        .background(Color("grau-gray-50").opacity(0.4))
+    }
+
+    private var hasActiveFilter: Bool {
+        viewModel.kindFilter != nil
+            || viewModel.dateFrom != nil
+            || viewModel.dateTo != nil
+    }
+
+    private var dateFilterLabel: String {
+        var parts: [String] = []
+        if let from = viewModel.dateFrom {
+            parts.append("from \(from.formatted(date: .abbreviated, time: .omitted))")
+        }
+        if let to = viewModel.dateTo {
+            parts.append("to \(to.formatted(date: .abbreviated, time: .omitted))")
+        }
+        return parts.joined(separator: " ")
     }
 
     @ViewBuilder
