@@ -21,33 +21,31 @@ public final class AppViewModel {
 
     /// Whether the user has completed the first-run onboarding.
     /// Stored property (not computed) so the @Observable system
-    /// tracks writes and SwiftUI views re-render.
-    public var hasOnboarded: Bool
+    /// tracks writes and SwiftUI views re-render. Persisted on write.
+    public var hasOnboarded: Bool {
+        didSet { UserDefaults.standard.set(hasOnboarded, forKey: Self.hasOnboardedKey) }
+    }
 
     /// Whether the developer features are visible in the sidebar.
-    public var devModeEnabled: Bool
+    /// Persisted on write.
+    public var devModeEnabled: Bool {
+        didSet { UserDefaults.standard.set(devModeEnabled, forKey: Self.devModeKey) }
+    }
 
     /// Threshold in days for the Old Downloads category. Default 90.
-    public var downloadsThresholdDays: Int
+    /// Persisted on write.
+    public var downloadsThresholdDays: Int {
+        didSet { UserDefaults.standard.set(downloadsThresholdDays, forKey: Self.downloadsThresholdDaysKey) }
+    }
 
     public init() {
-        // Read persisted state once at init time. We don't mirror
-        // writes back to UserDefaults via didSet because @Observable
-        // already handles the view-update side; we just need a hook
-        // for persistence. (We could add a sink, but for v1 the
-        // explicit persist() helper is enough.)
+        // Read persisted state once at init time. The `didSet` hooks
+        // on the stored properties above mirror every write back to
+        // UserDefaults, so callers no longer need to invoke persist().
         self.hasOnboarded = UserDefaults.standard.bool(forKey: Self.hasOnboardedKey)
         self.devModeEnabled = UserDefaults.standard.bool(forKey: Self.devModeKey)
         let storedDays = UserDefaults.standard.integer(forKey: Self.downloadsThresholdDaysKey)
         self.downloadsThresholdDays = storedDays == 0 ? 90 : storedDays
-    }
-
-    /// Persist the current state to UserDefaults. Call after any
-    /// mutation to hasOnboarded / devModeEnabled / downloadsThresholdDays.
-    public func persist() {
-        UserDefaults.standard.set(hasOnboarded, forKey: Self.hasOnboardedKey)
-        UserDefaults.standard.set(devModeEnabled, forKey: Self.devModeKey)
-        UserDefaults.standard.set(downloadsThresholdDays, forKey: Self.downloadsThresholdDaysKey)
     }
 
     // MARK: - Keys

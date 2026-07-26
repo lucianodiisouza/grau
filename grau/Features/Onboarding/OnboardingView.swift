@@ -89,7 +89,6 @@ struct OnboardingView: View {
             if step > 0 {
                 Button("Skip") {
                     appVM.hasOnboarded = true
-                    appVM.persist()
                 }
                 .buttonStyle(.borderless)
             }
@@ -99,7 +98,6 @@ struct OnboardingView: View {
             } else {
                 PrimaryButton("Get started") {
                     appVM.hasOnboarded = true
-                    appVM.persist()
                 }
             }
         }
