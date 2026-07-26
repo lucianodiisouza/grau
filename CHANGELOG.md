@@ -6,10 +6,63 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Planned for Phase 6a (1.0)
-- App icon, DMG packaging, notarization, Privacy Manifest
-- `PrivacyInfo.xcprivacy` declaring `NSPrivacyAccessedAPITypes`
-- README screenshots + polished landing page
+### Planned for Phase 6b (1.1)
+- Sparkle self-update with EdDSA signing
+- Homebrew Cask (`brew install --cask grau`)
+- Treemap visualization for Disk Lens (deferred from v1.0)
+- Per-file cancellation in Duplicates scanner (deferred from v1.0)
+
+## [1.0.0] — 2026-07-26
+
+**First stable release.** All five features functional and
+end-to-end tested. App is signed (ad-hoc by default; notarized
+when run through `scripts/notarize.sh`) and ships with the
+required `PrivacyInfo.xcprivacy`.
+
+### Highlights
+- 🧹 Junk cleaner (5 categories, safe defaults, FDA-gated)
+- 📦 App uninstaller (bundle + residuals + group containers)
+- 🔍 Disk lens (Top-N list with parallel-sized scan)
+- 🪞 Duplicates finder (3-phase pipeline, keep-oldest default)
+- 🛠 Dev mode (six inspectors, hidden by default)
+- 📌 Menu bar tray (storage card + last scan + quick actions)
+
+### graucore
+- 41 modules across 9 domains
+- 155 unit tests, all green
+- 100% public-API test coverage on the 8 critical modules:
+  TrashMover, FileSystemScanner, DirectorySizer, JunkScanner,
+  DuplicateScanner, Uninstaller, PermissionChecker, VolumeMonitor
+
+### grau
+- SwiftUI + AppKit, no third-party runtime deps
+- @MainActor @Observable view models throughout
+- App Sandbox OFF (Full Disk Access only)
+- 9 features: Dashboard, Clean, Uninstaller, Disk Lens,
+  Duplicates, Dev Mode, Onboarding, Permissions, Settings,
+  Menu Bar, Notifications
+
+### Tooling
+- XcodeGen project (`project.yml` source of truth)
+- `scripts/make-dmg.sh` — produce a signed DMG
+- `scripts/notarize.sh` — submit to notarytool + staple
+- GitHub Actions CI: build + test on every push
+- `PrivacyInfo.xcprivacy` declaring FileTimestamp,
+  DiskSpace, SystemBootTime, and UserDefaults API usage
+
+### Files
+- 6 docs in `docs/`: README, PLAN, ARCHITECTURE, DATA-SOURCES,
+  PERMISSIONS, DESIGN, HANDOFF, TASKS, REVIEW, MANUAL-TEST,
+  PATH-AUDIT-2026-07-26, TROUBLESHOOTING
+- README, CONTRIBUTING, CHANGELOG, LICENSE (MIT)
+
+### Known limitations (deferred to v1.1)
+- No Sparkle self-update yet
+- No Homebrew Cask
+- Duplicates scanner is per-phase-parallel, not per-file-parallel
+  (full-`~/` scan can take 5+ min on large homes)
+- Disk Lens shows Top-N folders, not a treemap
+- Trash restore is via Finder drag-out (no in-app restore)
 
 ## [0.6.0-beta.5] — 2026-07-26
 
