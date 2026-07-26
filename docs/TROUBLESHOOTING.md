@@ -88,30 +88,28 @@ multi-line collections, sorted imports.
 
 ## Strict-concurrency warnings in the grau target
 
-The `grau` target compiles with `SWIFT_STRICT_CONCURRENCY=complete`
-(see `project.yml`). This emits Swift-6-style "main actor-isolated
-X referenced from a non-isolated context" errors as **warnings** in
-Swift 5.
+The `grau` target compiles with `SWIFT_STRICT_CONCURRENCY=targeted`
+(see `project.yml`). `complete` was the original setting but it
+emits Swift-6-style "main actor-isolated X referenced from a
+non-isolated context" as **errors** in Swift 5, which produced
+30+ false-positive build failures on the CI macos-14 runner
+(Xcode 15.4, Swift 5.9). Local builds (Xcode 26.x, Swift 6) were
+green for the same code.
 
-The local build (Xcode 26.x, Swift 6) and the CI build (Xcode 15.4,
-Swift 5.9) disagree on how to surface these:
-- The local build often emits the warning but it's not blocking.
-- The CI build with `SWIFT_TREAT_WARNINGS_AS_ERRORS=YES` would treat
-  them as build failures.
-
-To keep CI green without losing visibility, the v1.7.0 release sets
-`SWIFT_TREAT_WARNINGS_AS_ERRORS=NO`. The strict-concurrency checks
-still run; their output is visible in the build log; they just
-don't fail the build.
+`targeted` keeps the Sendable / data-race safety checks (the
+actually-dangerous ones) without the view-code noise. The view
+files still have a real pattern that needs cleanup (see below) but
+those are tracked for v1.7.1.
 
 ### Why does this affect v1.7.0 specifically?
 
-The pre-existing v1.6.0 view code has the same warnings (every
-`@State private var vm = VMType()` where `VMType` is `@MainActor`,
-and every `@ViewBuilder` computed property that touches the
-`@MainActor` view model). v1.6.0 CI runs were also failing for the
-same reason — they were just never investigated. v1.7.0 added more
-view code, which made the noise louder.
+The pre-existing v1.6.0 view code has the same underlying issues
+(every `@State private var vm = VMType()` where `VMType` is
+`@MainActor`, and every `@ViewBuilder` computed property that
+touches the `@MainActor` view model). v1.6.0 CI runs were also
+failing for the same reason — they were just never investigated.
+v1.7.0 added more view code (the Automation sidebar), which made
+the noise louder.
 
 ### The proper fix (deferred to v1.7.1)
 
@@ -119,7 +117,7 @@ The mechanical fix is the same everywhere it occurs:
 
 ```swift
 // BEFORE — non-isolated @State init evaluates @MainActor init().
-// Errors under strict-concurrency.
+// Errors under strict-concurrency=complete.
 struct SomeView: View {
     @State private var vm = SomeMainActorViewModel()
 }
