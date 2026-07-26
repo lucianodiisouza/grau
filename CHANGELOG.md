@@ -6,6 +6,22 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- 🐛 **Uninstaller now shows the real bundle size for every app.**
+  The left sidebar was previously only listing name + version, so
+  apps like Xcode (~30 GB) looked identical to a 50 MB utility. The
+  app bundle size is now computed in parallel after the scan and
+  displayed in a right-aligned monospaced column. The detail header
+  also shows it inline (`Version 1.2.3 · 1.4 GB`), and the
+  "X to free" total now correctly includes the bundle itself in
+  addition to the selected residuals (previously it only counted
+  residuals, so the freed total underestimated what would actually
+  hit the Trash).
+
+### Notes
+- Third-party app **update** check is explicitly out of scope for
+  v1 — see `docs/PLAN.md` § 3.
+
 ## [1.7.0] — 2026-07-26
 
 Automation, retention, and lighter updates. Grau now prunes its

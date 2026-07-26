@@ -117,6 +117,15 @@ artifacts specific to dev workflows:
   pretend to do it either.
 - **No RAM / CPU / battery tools.** That's a different product
   (e.g., iStat Menus). We are scoped to storage.
+- **No third-party app update check.** Grau does not detect whether
+  an installed `.app` has a newer version available, and does not
+  offer to update apps from inside the Uninstaller. Reason: there is
+  no public macOS API for an app to learn the current published
+  version of another developer's app, and building a per-app
+  database (Homebrew + Mac App Store + Sparkle feeds + manual
+  scraping) is a separate product in its own right (e.g. MacUpdater).
+  Sparkle self-update in Grau itself is the *only* update flow Grau
+  ships. Adding this would be a follow-up feature, not a v1 fix.
 
 ## 4. Key decisions (locked)
 
