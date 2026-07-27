@@ -10,7 +10,15 @@ import graucore
 
 struct JunkCleanerView: View {
     @Environment(AppViewModel.self) private var appVM
-    @State private var viewModel = JunkCleanerViewModel()
+    @State private var viewModel: JunkCleanerViewModel
+
+    @MainActor
+    init() {
+        // JunkCleanerViewModel is @MainActor — construct in the
+        // struct's init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: JunkCleanerViewModel())
+    }
 
     var body: some View {
         @Bindable var bindableVM = viewModel
@@ -34,6 +42,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var toolbar: some View {
         HStack {
             Text("Clean")
@@ -43,6 +52,7 @@ struct JunkCleanerView: View {
                 ProgressView().controlSize(.small)
             } else {
                 Button {
+                    let viewModel = viewModel
                     Task { await viewModel.scan() }
                 } label: {
                     Label("Scan", systemImage: "arrow.clockwise")
@@ -54,6 +64,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         switch viewModel.phase {
         case .idle:
@@ -83,6 +94,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var resultsList: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -100,6 +112,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var summaryHeader: some View {
         CardView {
             HStack(alignment: .firstTextBaseline) {
@@ -120,6 +133,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func categoryRow(_ result: JunkResult) -> some View {
         let isSelected = viewModel.selectedCategories.contains(result.category)
         let definition = JunkDefinitions.definition(for: result.category)
@@ -173,6 +187,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var bottomActionBar: some View {
         HStack {
             Text("\(viewModel.selectedCategories.count) selected")
@@ -196,6 +211,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var confirmSheet: some View {
         VStack(spacing: Spacing.lg) {
             Spacer()
@@ -229,6 +245,7 @@ struct JunkCleanerView: View {
                     systemImage: "trash",
                     isEnabled: !viewModel.selectedCategories.isEmpty
                 ) {
+                    let viewModel = viewModel
                     Task { await viewModel.confirmClean() }
                 }
             }
@@ -237,6 +254,7 @@ struct JunkCleanerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func successSheet(_ outcome: JunkCleaner.CleanupOutcome) -> some View {
         VStack(spacing: Spacing.lg) {
             Spacer()

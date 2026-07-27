@@ -67,6 +67,7 @@ struct PermissionPrimerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var done: some View {
         VStack(spacing: Spacing.lg) {
             Image(systemName: coordinator.state.fullDiskAccess
@@ -91,6 +92,7 @@ struct PermissionPrimerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var footer: some View {
         HStack {
             if step > 0 {

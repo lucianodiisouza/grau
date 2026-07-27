@@ -14,7 +14,15 @@ import SwiftUI
 import graucore
 
 struct DevModeView: View {
-    @State private var viewModel = DevModeViewModel()
+    @State private var viewModel: DevModeViewModel
+
+    @MainActor
+    init() {
+        // DevModeViewModel is @MainActor — construct in the struct's
+        // init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: DevModeViewModel())
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,6 +35,7 @@ struct DevModeView: View {
     // MARK: - Toolbar
 
     @ViewBuilder
+    @MainActor
     private var toolbar: some View {
         HStack {
             Text("Dev Mode")
@@ -36,6 +45,7 @@ struct DevModeView: View {
                 ProgressView().controlSize(.small)
             } else {
                 Button {
+                    let viewModel = viewModel
                     Task { await viewModel.refresh() }
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
@@ -49,6 +59,7 @@ struct DevModeView: View {
     // MARK: - Content
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         if viewModel.isScanning && viewModel.report == nil {
             ProgressView("Scanning…")
@@ -74,7 +85,10 @@ struct DevModeView: View {
                 title: "Dev scan failed",
                 message: error,
                 action: {
-                    PrimaryButton("Retry") { Task { await viewModel.refresh() } }
+                    PrimaryButton("Retry") {
+                        let viewModel = viewModel
+                        Task { await viewModel.refresh() }
+                    }
                 }
             )
         } else {
@@ -84,6 +98,7 @@ struct DevModeView: View {
                 message: "Scan package caches, node_modules, Docker, simulators, DerivedData, and Xcode archives.",
                 action: {
                     PrimaryButton("Scan") {
+                        let viewModel = viewModel
                         Task { await viewModel.refresh() }
                     }
                 }

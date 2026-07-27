@@ -23,6 +23,10 @@ struct OnboardingView: View {
         }
         .padding(Spacing.xxl)
         .frame(maxWidth: 560)
+        // Dock icon follows this window's visibility (it appears
+        // while onboarding is on screen, disappears after the user
+        // dismisses the window). See DockIconController.
+        .syncDockIconWithWindowVisibility()
     }
 
     @ViewBuilder
@@ -84,6 +88,7 @@ struct OnboardingView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var footer: some View {
         HStack {
             if step > 0 {

@@ -16,6 +16,7 @@ import graucore
 struct TrashView: View {
     @State private var viewModel: TrashViewModel
 
+    @MainActor
     init() {
         // TrashViewModel is @MainActor — construct in the struct's
         // init (which is implicitly @MainActor for a SwiftUI View).
@@ -32,6 +33,7 @@ struct TrashView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var toolbar: some View {
         HStack {
             Text("Trash")
@@ -42,6 +44,7 @@ struct TrashView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button {
+                let viewModel = viewModel
                 Task { await viewModel.refresh() }
             } label: {
                 Label("Refresh", systemImage: "arrow.clockwise")
@@ -52,6 +55,7 @@ struct TrashView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         if viewModel.isLoading {
             ProgressView("Loading…")
@@ -86,6 +90,7 @@ struct TrashView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var filterBar: some View {
         HStack(spacing: Spacing.sm) {
             Menu {
@@ -128,12 +133,14 @@ struct TrashView: View {
         .background(Color("grau-gray-50").opacity(0.4))
     }
 
+    @MainActor
     private var hasActiveFilter: Bool {
         viewModel.kindFilter != nil
             || viewModel.dateFrom != nil
             || viewModel.dateTo != nil
     }
 
+    @MainActor
     private var dateFilterLabel: String {
         var parts: [String] = []
         if let from = viewModel.dateFrom {
@@ -146,6 +153,7 @@ struct TrashView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func manifestCard(_ summary: TrashManifestSummary) -> some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -169,6 +177,7 @@ struct TrashView: View {
                     HStack {
                         Spacer()
                         Button {
+                            let viewModel = viewModel
                             Task { await viewModel.restore(manifestID: summary.id) }
                         } label: {
                             Label("Restore all", systemImage: "arrow.uturn.backward")
@@ -180,6 +189,7 @@ struct TrashView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func outcomeRow(_ outcome: TrashRestoreOutcome) -> some View {
         if outcome.failed.isEmpty {
             HStack {

@@ -11,7 +11,15 @@ import graucore
 
 struct UninstallerView: View {
     @Environment(AppViewModel.self) private var appVM
-    @State private var viewModel = UninstallerViewModel()
+    @State private var viewModel: UninstallerViewModel
+
+    @MainActor
+    init() {
+        // UninstallerViewModel is @MainActor — construct in the
+        // struct's init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: UninstallerViewModel())
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,15 +41,70 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var toolbar: some View {
-        HStack {
+        // Use @Bindable to derive a Binding to the view model's
+        // properties without copying the whole struct. SwiftUI's
+        // TextField needs a `Binding<String>`, not a plain `String`.
+        @Bindable var bindableVM = viewModel
+
+        HStack(spacing: Spacing.md) {
             Text("Uninstaller")
                 .font(.title2.weight(.semibold))
             Spacer()
+            // Search field. Bound directly to the view model so the
+            // filter is reactive. We render a custom field instead
+            // of `.roundedBorder` so the magnifier icon and clear
+            // button can sit inline (Finder-style).
+            HStack(spacing: Spacing.xs) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search apps", text: $bindableVM.searchText)
+                    .textFieldStyle(.plain)
+                    .frame(minWidth: 140, idealWidth: 180)
+                if !viewModel.searchText.isEmpty {
+                    Button {
+                        viewModel.searchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.borderless)
+                }
+            }
+            .padding(.horizontal, Spacing.sm)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.secondary.opacity(0.1))
+            )
+            // Sort picker. A Menu (vs. a Picker) reads more like a
+            // dropdown and matches the user's request for a "dropdown".
+            Menu {
+                ForEach(UninstallerViewModel.SortOrder.allCases) { order in
+                    Button {
+                        viewModel.sortOrder = order
+                    } label: {
+                        if viewModel.sortOrder == order {
+                            Label(order.displayName, systemImage: "checkmark")
+                        } else {
+                            Text(order.displayName)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: "arrow.up.arrow.down")
+                    Text(viewModel.sortOrder.displayName)
+                }
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
             if viewModel.phase == .scanning {
                 ProgressView().controlSize(.small)
             } else {
                 Button {
+                    let viewModel = viewModel
                     Task { await viewModel.scan() }
                 } label: {
                     Label("Scan", systemImage: "arrow.clockwise")
@@ -53,6 +116,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         switch viewModel.phase {
         case .idle, .scanning:
@@ -71,6 +135,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var twoColumn: some View {
         // NOTE: do NOT use HSplitView here. The host is a
         // NavigationSplitView (MainWindowView), and nesting an
@@ -89,6 +154,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var appList: some View {
         // ScrollView + LazyVStack instead of List. SwiftUI's
         // List (including `.sidebar` style) reserves a leading
@@ -97,17 +163,43 @@ struct UninstallerView: View {
         // on unselected rows that disappears the moment a row is
         // selected. Building the rows ourselves gives us full
         // control: the icon sits at the same leading edge whether
-        // the row is highlighted or not.
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(viewModel.apps) { app in
-                    appRow(for: app)
+        // the row is highlighted or not, and the selected
+        // highlight extends edge-to-edge so it doesn't "blink" in
+        // when the user picks a row.
+        let rows = viewModel.visibleApps
+        if rows.isEmpty {
+            // Distinguish "no apps" (scan is still loading or
+            // really nothing's installed) from "no matches" (the
+            // current search/sort produced nothing).
+            if viewModel.apps.isEmpty {
+                EmptyStateView(
+                    icon: "shippingbox",
+                    title: "No installed apps found",
+                    message: "Run a scan to populate the list."
+                )
+            } else {
+                VStack(spacing: Spacing.sm) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 24))
+                        .foregroundStyle(.secondary)
+                    Text("No apps match \u{201C}\(viewModel.searchText)\u{201D}")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        } else {
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(rows) { app in
+                        appRow(for: app)
+                    }
                 }
             }
         }
     }
 
     @ViewBuilder
+    @MainActor
     private func appRow(for app: InstalledApp) -> some View {
         let isSelected = viewModel.selectedApp == app
         HStack(spacing: Spacing.sm) {
@@ -140,11 +232,16 @@ struct UninstallerView: View {
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The selection highlight extends edge-to-edge of the row
+        // (no horizontal padding on the background) so the icon
+        // sits at the same leading edge whether the row is
+        // highlighted or not. Any inset on the highlight would
+        // look like the highlight "moved" relative to the icon
+        // when the user picks a row — that's the blink the user
+        // reported.
         .background {
             if isSelected {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.25))
-                    .padding(.horizontal, 6)
+                Color.accentColor.opacity(0.25)
             }
         }
         .contentShape(Rectangle())
@@ -154,12 +251,14 @@ struct UninstallerView: View {
                 viewModel.residuals = []
                 viewModel.selectedResidualIDs = []
             } else {
+                let viewModel = viewModel
                 Task { await viewModel.selectApp(app) }
             }
         }
     }
 
     @ViewBuilder
+    @MainActor
     private var detailPane: some View {
         Group {
             if let app = viewModel.selectedApp {
@@ -175,6 +274,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func detail(for app: InstalledApp) -> some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
             header(for: app)
@@ -192,6 +292,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func header(for app: InstalledApp) -> some View {
         CardView {
             HStack(alignment: .top, spacing: Spacing.md) {
@@ -240,6 +341,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var residualsList: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
@@ -278,6 +380,7 @@ struct UninstallerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func residualRow(_ residual: Residual) -> some View {
         let isSelected = viewModel.selectedResidualIDs.contains(residual.id)
         CardView {

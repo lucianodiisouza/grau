@@ -11,10 +11,20 @@ import graucore
 
 struct SettingsView: View {
     @Environment(AppViewModel.self) private var appVM
-    @State private var permissionCoordinator = PermissionCoordinator()
+    @State private var permissionCoordinator: PermissionCoordinator
     @State private var permissionState: PermissionState = .unknown
-    @State private var notificationCoordinator = NotificationCoordinator()
+    @State private var notificationCoordinator: NotificationCoordinator
     @State private var refreshTick: Int = 0
+
+    @MainActor
+    init() {
+        // Both PermissionCoordinator and NotificationCoordinator
+        // are @MainActor — construct in the struct's init
+        // (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _permissionCoordinator = State(wrappedValue: PermissionCoordinator())
+        _notificationCoordinator = State(wrappedValue: NotificationCoordinator())
+    }
 
     var body: some View {
         // Single scrolling page instead of a TabView. Settings is
@@ -41,6 +51,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var aboutHero: some View {
         HStack(alignment: .top, spacing: Spacing.md) {
             Image(systemName: "circle.hexagongrid.fill")
@@ -58,6 +69,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var privacySection: some View {
         @Bindable var bindableAppVM = appVM
         VStack(alignment: .leading, spacing: Spacing.md) {
@@ -80,6 +92,7 @@ struct SettingsView: View {
                             permissionCoordinator.openSystemSettingsAndPoll()
                         }
                         Button("Re-check") {
+                            let permissionCoordinator = permissionCoordinator
                             Task {
                                 await permissionCoordinator.refresh()
                                 permissionState = permissionCoordinator.state
@@ -93,6 +106,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var notificationsSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             sectionHeader("Notifications", systemImage: "bell")
@@ -106,6 +120,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func ruleCard(for rule: NotificationRuleID) -> some View {
         GroupBox {
             VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -139,11 +154,13 @@ struct SettingsView: View {
         }
     }
 
+    @MainActor
     private func cooldownText(for rule: NotificationRuleID) -> String {
         let seconds = notificationCoordinator.cooldownSeconds(for: rule)
         return NotificationCooldown(ruleID: rule.rawValue, seconds: seconds).humanReadable
     }
 
+    @MainActor
     private func cooldownBinding(for rule: NotificationRuleID) -> Binding<TimeInterval> {
         Binding(
             get: { notificationCoordinator.cooldownSeconds(for: rule) },
@@ -155,6 +172,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var developerSection: some View {
         @Bindable var bindableAppVM = appVM
         VStack(alignment: .leading, spacing: Spacing.md) {
@@ -180,6 +198,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func sectionHeader(_ title: String, systemImage: String) -> some View {
         HStack(spacing: Spacing.xs) {
             Image(systemName: systemImage)

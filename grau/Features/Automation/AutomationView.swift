@@ -19,8 +19,16 @@ import SwiftUI
 import graucore
 
 struct AutomationView: View {
-    @State private var vm = AutomationViewModel()
+    @State private var vm: AutomationViewModel
     @State private var showingNewRule = false
+
+    @MainActor
+    init() {
+        // AutomationViewModel is @MainActor — construct in the
+        // struct's init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _vm = State(wrappedValue: AutomationViewModel())
+    }
 
     var body: some View {
         ScrollView {
@@ -33,11 +41,15 @@ struct AutomationView: View {
             .padding(Spacing.lg)
             .frame(maxWidth: 760, alignment: .leading)
         }
-        .task { await vm.refresh() }
+        .task {
+            let vm = vm
+            await vm.refresh()
+        }
         .sheet(isPresented: $showingNewRule) {
             AutoCleanRuleEditor(
                 rule: nil,
                 onSave: { rule in
+                    let vm = vm
                     Task {
                         await vm.addRule(rule)
                     }
@@ -64,6 +76,7 @@ struct AutomationView: View {
     // MARK: - Last run
 
     @ViewBuilder
+    @MainActor
     private var lastRunCard: some View {
         if let report = vm.lastReport, report.totalRemoved > 0 {
             CardView {
@@ -100,6 +113,7 @@ struct AutomationView: View {
 
     // MARK: - Retention section
 
+    @MainActor
     private var retentionSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             sectionHeader("Retention", subtitle: "How long Grau keeps each kind of history.")
@@ -108,6 +122,7 @@ struct AutomationView: View {
             }
             HStack {
                 Button {
+                    let vm = vm
                     Task { await vm.runRetentionNow() }
                 } label: {
                     Label("Run retention now", systemImage: "play.fill")
@@ -120,6 +135,7 @@ struct AutomationView: View {
         }
     }
 
+    @MainActor
     private func retentionRow(for kind: RetentionKind) -> some View {
         let current = vm.policy.days(for: kind)
         let isDefault = vm.policy.windows[kind] == nil
@@ -136,6 +152,7 @@ struct AutomationView: View {
                     Spacer()
                     if !isDefault {
                         Button("Reset") {
+                            let vm = vm
                             Task { await vm.resetRetention(for: kind) }
                         }
                         .buttonStyle(.borderless)
@@ -145,6 +162,7 @@ struct AutomationView: View {
                     value: Binding(
                         get: { current },
                         set: { newValue in
+                            let vm = vm
                             Task { await vm.setRetention(newValue, for: kind) }
                         }
                     ),
@@ -160,6 +178,7 @@ struct AutomationView: View {
 
     // MARK: - Auto-clean section
 
+    @MainActor
     private var autoCleanSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             sectionHeader(
@@ -183,6 +202,7 @@ struct AutomationView: View {
                     Label("New rule", systemImage: "plus")
                 }
                 Button {
+                    let vm = vm
                     Task { await vm.runAutoCleanNow() }
                 } label: {
                     Label("Run rules now", systemImage: "play.fill")
@@ -192,6 +212,7 @@ struct AutomationView: View {
         }
     }
 
+    @MainActor
     private func autoCleanRow(_ rule: AutoCleanRule) -> some View {
         CardView {
             HStack(alignment: .top, spacing: Spacing.md) {
@@ -200,6 +221,7 @@ struct AutomationView: View {
                     isOn: Binding(
                         get: { rule.enabled },
                         set: { newValue in
+                            let vm = vm
                             Task { await vm.toggleRule(rule, enabled: newValue) }
                         }
                     )
@@ -225,6 +247,7 @@ struct AutomationView: View {
                         // v1.8.
                     }
                     Button("Delete", systemImage: "trash", role: .destructive) {
+                        let vm = vm
                         Task { await vm.deleteRule(id: rule.id) }
                     }
                 } label: {

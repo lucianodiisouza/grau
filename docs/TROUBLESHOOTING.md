@@ -94,50 +94,42 @@ Swift 5 it emits Swift-6-style "main actor-isolated X referenced
 from a non-isolated context" as **errors** that the CI macos-14
 runner (Xcode 15.4, Swift 5.9) flags but local Xcode 26.x is
 lenient about. v1.7.0 surface area grew the noise past the point
-where `targeted` was tolerable (still emitted 20+ errors via
-"call to main actor-isolated initializer in a synchronous
-nonisolated context" for the `@State private var vm = VMType()`
-pattern), so we dropped to `minimal` to unblock v1.7.0.
+where `targeted` was tolerable, so we dropped to `minimal` to
+unblock v1.7.0.
 
 `minimal` keeps only Sendable checks — the actually-dangerous
-data-race safety net. Actor-isolation enforcement is restored
-either by:
+data-race safety net. Even at `minimal`, the `@State private var
+vm = VMType()` pattern and the related `@ViewBuilder` properties
+still error under whole-module optimization (Release) because
+they cross `@MainActor` boundaries. Every view was rewritten to
+the Swift-6-ready pattern in v1.7.0; see "The proper fix" below.
 
-1. **Migrating to Swift 6**, which makes `@State private var vm
-   = VMType()` an actual error and forces the proper init pattern.
-2. **Manually rewriting every View** to use `_vm = State(...)` in
-   a custom `init()` and to mark every `@ViewBuilder` property
-   `@MainActor`. This is the v1.7.1 plan; see "The proper fix"
-   below.
-
-The pre-existing v1.6.0 view code has the same `@State`-with-`@MainActor`
-pattern. CI runs for v1.6.0 were failing for the same reason but
-the failures were never investigated. v1.7.0 added more view code
-(the Automation sidebar), which made the noise louder and triggered
-someone to actually look at CI.
-
-### The proper fix (deferred to v1.7.1)
+### The proper fix (applied in v1.7.0)
 
 The mechanical fix is the same everywhere it occurs:
 
 ```swift
 // BEFORE — non-isolated @State init evaluates @MainActor init().
-// Errors under strict-concurrency=complete/targeted.
+// Errors under strict-concurrency=minimal in Release.
 struct SomeView: View {
     @State private var vm = SomeMainActorViewModel()
 }
 
-// AFTER — @State init happens in struct's init, which is
-// implicitly @MainActor for a SwiftUI View.
+// AFTER — @State is declared without an initial value; the
+// custom @MainActor init constructs the viewmodel on the main
+// actor, and every @ViewBuilder that touches vm is marked
+// @MainActor as well.
 struct SomeView: View {
     @State private var vm: SomeMainActorViewModel
+
+    @MainActor
     init() {
         _vm = State(wrappedValue: SomeMainActorViewModel())
     }
 }
 ```
 
-And on every `@ViewBuilder` computed property that touches the
+On every `@ViewBuilder` computed property that touches the
 `@MainActor` view model:
 
 ```swift
@@ -146,8 +138,13 @@ And on every `@ViewBuilder` computed property that touches the
 private var someSheet: some View { ... }
 ```
 
-And on every `Task { ... }` that captures `self` (the non-Sendable
-View struct):
+(Helper functions and computed `var` properties that touch the
+view model need `@MainActor` too — not just `@ViewBuilder`
+ones.)
+
+On every `Task { ... }` that captures the viewmodel (the
+non-Sendable View struct), capture the viewmodel explicitly so
+the `@Sendable` closure doesn't capture `self`:
 
 ```swift
 // BEFORE — captures self in a @Sendable closure.
@@ -162,19 +159,17 @@ DestructiveButton("Go") {
 }
 ```
 
-Affected files as of v1.7.0:
+This pattern was applied to every view in the `grau/Features/`
+tree in v1.7.0 (originally listed as "v1.7.1 debt" in earlier
+docs). Adding a new view with a `@MainActor` viewmodel? Copy
+any existing example and follow the recipe.
 
-- `grau/Features/Automation/AutomationView.swift`
-- `grau/Features/Dashboard/DashboardView.swift`
-- `grau/Features/DevMode/DevModeView.swift`
-- `grau/Features/JunkCleaner/JunkCleanerView.swift`
-- `grau/Features/MenuBar/MenuBarContentView.swift`
-- `grau/Features/Notifications/NotificationCenterView.swift`
-- `grau/Features/Settings/SettingsView.swift`
-- `grau/Features/Trash/TrashView.swift`
-- `grau/Features/Uninstaller/UninstallerView.swift`
+#### Why an explicit `@MainActor` on the init?
 
-`grau/Features/Uninstaller/UninstallerView.swift` and
-`grau/grauApp.swift` already have the proper `@State` pattern
-in v1.7.0 (see `fix(ci): resolve strict-concurrency errors in
-grauApp + UninstallerView`).
+The struct's memberwise / explicit `init()` defaults to
+`nonisolated` under Swift 5 strict-concurrency, so calling a
+`@MainActor` viewmodel initializer from it errors out at the
+`_vm = State(wrappedValue: SomeMainActorViewModel())` line.
+Marking the init `@MainActor` opts it back in. SwiftUI does
+construct views on the main thread at runtime, so the annotation
+is correct, not aspirational.

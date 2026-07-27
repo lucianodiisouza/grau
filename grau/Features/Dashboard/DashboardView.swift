@@ -13,7 +13,15 @@ import graucore
 
 struct DashboardView: View {
     @Environment(AppViewModel.self) private var appVM
-    @State private var viewModel = DashboardViewModel()
+    @State private var viewModel: DashboardViewModel
+
+    @MainActor
+    init() {
+        // DashboardViewModel is @MainActor — construct in the
+        // struct's init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: DashboardViewModel())
+    }
 
     var body: some View {
         ScrollView {
@@ -55,6 +63,7 @@ struct DashboardView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var storageCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.md) {
@@ -92,6 +101,7 @@ struct DashboardView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var trashCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -112,12 +122,14 @@ struct DashboardView: View {
         }
     }
 
+    @MainActor
     private var trashItemCountText: String {
         let n = viewModel.trashItemCount
         return n == 1 ? "1 item" : "\(n) items"
     }
 
     @ViewBuilder
+    @MainActor
     private var lastScanCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -147,6 +159,7 @@ struct DashboardView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var quickActions: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.md) {
@@ -183,6 +196,7 @@ struct DashboardView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private func quickActionButton(
         _ title: String,
         systemImage: String,
@@ -207,6 +221,7 @@ struct DashboardView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var recentScansCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: Spacing.sm) {

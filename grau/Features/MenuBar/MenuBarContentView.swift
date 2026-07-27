@@ -12,7 +12,15 @@ import graucore
 struct MenuBarContentView: View {
     @Environment(AppViewModel.self) private var appVM
     @Environment(\.openWindow) private var openWindow
-    @State private var menuState = MenuBarState()
+    @State private var menuState: MenuBarState
+
+    @MainActor
+    init() {
+        // MenuBarState is @MainActor — construct in the struct's
+        // init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _menuState = State(wrappedValue: MenuBarState())
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
@@ -33,6 +41,7 @@ struct MenuBarContentView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var header: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("Grau")
@@ -44,6 +53,7 @@ struct MenuBarContentView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var storageRow: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             StorageBar(used: menuState.totalBytes - menuState.freeBytes, total: menuState.totalBytes)
@@ -51,6 +61,7 @@ struct MenuBarContentView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var trashRow: some View {
         HStack {
             Image(systemName: "trash")
@@ -67,6 +78,7 @@ struct MenuBarContentView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var quickActions: some View {
         VStack(spacing: Spacing.xs) {
             SecondaryButton("Dar um Grau", systemImage: "macwindow") {
@@ -126,11 +138,13 @@ struct MenuBarContentView: View {
         }
     }
 
+    @MainActor
     private var freeText: String {
         let free = ByteSize(bytes: menuState.freeBytes)
         return "\(free.humanReadable) free"
     }
 
+    @MainActor
     private var trashText: String {
         if menuState.trashSize == 0 {
             return "Empty"

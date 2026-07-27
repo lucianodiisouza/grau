@@ -17,9 +17,18 @@ import SwiftUI
 import graucore
 
 struct NotificationCenterView: View {
-    @State private var viewModel = NotificationCenterViewModel()
-    @State private var notificationCoordinator = NotificationCoordinator()
+    @State private var viewModel: NotificationCenterViewModel
+    @State private var notificationCoordinator: NotificationCoordinator
     @State private var refreshTick: Int = 0
+
+    @MainActor
+    init() {
+        // Both viewmodels are @MainActor — construct in the
+        // struct's init (implicitly @MainActor for a SwiftUI View).
+        // See docs/TROUBLESHOOTING.md#strict-concurrency.
+        _viewModel = State(wrappedValue: NotificationCenterViewModel())
+        _notificationCoordinator = State(wrappedValue: NotificationCoordinator())
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,6 +42,7 @@ struct NotificationCenterView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var toolbar: some View {
         HStack {
             Text("Notifications")
@@ -43,6 +53,7 @@ struct NotificationCenterView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Button {
+                let viewModel = viewModel
                 Task {
                     await viewModel.refresh()
                     refreshTick &+= 1
@@ -53,6 +64,7 @@ struct NotificationCenterView: View {
             .buttonStyle(.borderless)
             if !viewModel.entries.isEmpty {
                 Button(role: .destructive) {
+                    let viewModel = viewModel
                     Task { await viewModel.clear() }
                 } label: {
                     Label("Clear", systemImage: "trash")
@@ -64,6 +76,7 @@ struct NotificationCenterView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var ruleStatusCard: some View {
         // Touch refreshTick so this view re-evaluates on each refresh.
         let _ = refreshTick
@@ -99,6 +112,7 @@ struct NotificationCenterView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         if viewModel.isLoading {
             ProgressView("Loading…")
