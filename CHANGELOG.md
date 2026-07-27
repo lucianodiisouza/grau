@@ -6,6 +6,44 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- 🔍 **Uninstaller: search box + sort dropdown.** The app list now
+  has a search field (filters by name, case-insensitive substring)
+  and a "Sort by" menu with four options: **Latest Opened** (newest
+  first, sourced from Spotlight's `kMDItemLastUsedDate` via `MDItem`
+  in a background pass after each scan), **Size** (largest bundle
+  first), **Install Date** (newest first, uses the bundle's mtime),
+  and **Alphabetical** (A → Z, the default). Apps with no recorded
+  data for the active sort sink to the bottom in deterministic
+  alphabetical order.
+- 🆕 **`InstalledApp.lastUsedDate`** field (graucore) plus a new
+  `LastUsedDateLoader` utility that reads
+  `kMDItemLastUsedDate` for a bundle URL. `UninstallerViewModel`
+  runs the lookup concurrently in a background task right after
+  each scan, cancels it on the next `scan()`, and writes each
+  result back into the matching entry of `apps` so the row
+  re-orders live as the data streams in.
+
+### Changed
+- 🎨 **Removed the duplicated section header.** Every section was
+  showing its name twice — once in the macOS title bar (driven by
+  `MainWindowView.navigationTitle(selectedSection.title)`) and
+  again in the per-section toolbar. We dropped the window-level
+  `navigationTitle` and added an `EmptyView` to the `.principal`
+  toolbar slot, so the macOS title bar no longer renders a second
+  copy. The window's actual title (Dock / Cmd+Tab / Window menu)
+  is still updated to match the active section via `NSWindow.title`.
+  Each section keeps its own in-content header so the title can
+  sit next to action buttons (Scan, Search, Sort, …).
+- 🎨 **Uninstaller: row selection no longer "blinks" the icon.**
+  The selected-row highlight used to be a rounded rectangle inset
+  6 pt from each edge, so the icon (which sat at 12 pt from the
+  edge) was 6 pt inside the highlight. On click the highlight
+  would suddenly wrap around the icon, making it look like the
+  icon "moved". The highlight now extends edge-to-edge, so the
+  icon sits at the same leading edge whether the row is selected
+  or not.
+
 ### Fixed
 - 🐛 **App no longer crashes on launch with "Unexpectedly found nil
   while implicitly unwrapping an Optional value" at `grauApp.swift:62`.**

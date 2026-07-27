@@ -142,7 +142,8 @@ private extension InstalledApp {
             groupContainerIDs: groupContainerIDs,
             hasUninstallHelper: hasUninstallHelper,
             helperPath: helperPath,
-            bundleSize: size
+            bundleSize: size,
+            lastUsedDate: lastUsedDate
         )
     }
 }

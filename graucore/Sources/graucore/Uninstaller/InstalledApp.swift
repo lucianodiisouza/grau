@@ -27,6 +27,15 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
     /// Use `bundleSize > 0` as the "known" signal in the UI.
     public let bundleSize: Int64
 
+    /// When the app was last launched, from Spotlight's
+    /// `kMDItemLastUsedDate` attribute. `nil` when Spotlight has
+    /// no record (the app was never launched, Spotlight is
+    /// disabled, or the index is cold). Used for the "Latest
+    /// Opened" sort option in the Uninstaller view; not
+    /// populated by `AppScanner.scan()` — the view fetches it
+    /// in a background pass (see `AppScanner.loadLastUsedDates`).
+    public let lastUsedDate: Date?
+
     public init(
         id: String,
         name: String,
@@ -37,7 +46,8 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
         groupContainerIDs: [String] = [],
         hasUninstallHelper: Bool = false,
         helperPath: URL? = nil,
-        bundleSize: Int64 = 0
+        bundleSize: Int64 = 0,
+        lastUsedDate: Date? = nil
     ) {
         self.id = id
         self.name = name
@@ -49,6 +59,7 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
         self.hasUninstallHelper = hasUninstallHelper
         self.helperPath = helperPath
         self.bundleSize = bundleSize
+        self.lastUsedDate = lastUsedDate
     }
 
     /// True if the bundle ID starts with "com.apple." — these are
@@ -56,5 +67,28 @@ public struct InstalledApp: Identifiable, Hashable, Sendable {
     /// the user explicitly opts in.
     public var isAppleSystemComponent: Bool {
         id.hasPrefix("com.apple.")
+    }
+
+    /// Returns a copy of this app with `lastUsedDate` replaced.
+    /// Used by the Uninstaller view's background Spotlight pass
+    /// (`UninstallerViewModel.loadLastUsedDates`) to stream the
+    /// "last opened" timestamp into each entry without forcing
+    /// the caller to rebuild the struct by hand. `lastUsedDate`
+    /// is `let` on the struct, so a copy is the only way to
+    /// "mutate" it.
+    public func withLastUsedDate(_ date: Date?) -> InstalledApp {
+        InstalledApp(
+            id: id,
+            name: name,
+            installedVersion: installedVersion,
+            bundleURL: bundleURL,
+            iconData: iconData,
+            lastModified: lastModified,
+            groupContainerIDs: groupContainerIDs,
+            hasUninstallHelper: hasUninstallHelper,
+            helperPath: helperPath,
+            bundleSize: bundleSize,
+            lastUsedDate: date
+        )
     }
 }

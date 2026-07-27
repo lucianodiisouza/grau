@@ -24,6 +24,7 @@ struct PermissionPrimerView: View {
     }
 
     @ViewBuilder
+    @MainActor
     private var content: some View {
         switch step {
         case 0: welcome

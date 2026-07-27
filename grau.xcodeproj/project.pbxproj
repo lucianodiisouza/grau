@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -42,6 +42,7 @@
 		AAE1198B7ACBE85FDFF8FAB5 /* JunkCleanerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6469DAE9E66E15048F0442 /* JunkCleanerView.swift */; };
 		AAEB8D66695F4D1091A9D7B7 /* PermissionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF57B788A5A637D6877462 /* PermissionCoordinator.swift */; };
 		AB140A427DF53B25232ED45C /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */; };
+		B58657C1C620A53F51DB539C /* DockIconController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F8E68E61388630FFF02064 /* DockIconController.swift */; };
 		BFC7264BDAEFB8826410A70E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF28F8808670ACD2427830E9 /* DashboardView.swift */; };
 		C1F6E4065EE1F1AFDADBED2F /* TrashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E498C8615DD96573423C4270 /* TrashViewModel.swift */; };
 		D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D0B95B57C92443A397A6E8 /* DiskLensView.swift */; };
@@ -98,6 +99,7 @@
 		E56CB3CE0CB367E5C06BD08A /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		E7B13EF7229DDAAF0784C0DA /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		F3773B175B56A631710DD28D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		F3F8E68E61388630FFF02064 /* DockIconController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockIconController.swift; sourceTree = "<group>"; };
 		F99AD415F624B681BDD2527D /* DiskTreemapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTreemapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -272,6 +274,7 @@
 		913ECEC7C0716E4032B30232 /* MainWindow */ = {
 			isa = PBXGroup;
 			children = (
+				F3F8E68E61388630FFF02064 /* DockIconController.swift */,
 				17E3110DB98F94063A49DC04 /* MainWindowView.swift */,
 			);
 			path = MainWindow;
@@ -442,6 +445,7 @@
 				247BF2DD75411253D5A42674 /* DevModeViewModel.swift in Sources */,
 				D90106B8BA499538FF18A85A /* DiskLensView.swift in Sources */,
 				EEE4E459892740FB675B3900 /* DiskTreemapView.swift in Sources */,
+				B58657C1C620A53F51DB539C /* DockIconController.swift in Sources */,
 				352EF964F873D61E005A7D63 /* DuplicatesView.swift in Sources */,
 				6FE189F0761B074193308825 /* EmptyStateView.swift in Sources */,
 				75D64EC5668558E31F9D6C13 /* ErrorStateView.swift in Sources */,

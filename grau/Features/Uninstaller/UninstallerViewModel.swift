@@ -20,6 +20,31 @@ final class UninstallerViewModel {
         case completed
     }
 
+    /// Sort options for the app list. Order in this enum is the
+    /// order shown in the dropdown picker.
+    enum SortOrder: String, CaseIterable, Identifiable {
+        /// Most recently used apps first (Spotlight
+        /// `kMDItemLastUsedDate`, descending). Apps that have
+        /// never been launched sink to the bottom.
+        case lastOpened
+        /// Largest bundle first.
+        case size
+        /// Most recently installed first (bundle mtime, descending).
+        case installDate
+        /// A → Z by app name.
+        case alphabetical
+
+        var id: String { rawValue }
+        var displayName: String {
+            switch self {
+            case .lastOpened:    "Latest Opened"
+            case .size:          "Size"
+            case .installDate:   "Install Date"
+            case .alphabetical:  "Alphabetical"
+            }
+        }
+    }
+
     private(set) var phase: Phase = .idle
     private(set) var apps: [InstalledApp] = []
     var selectedApp: InstalledApp?
@@ -27,6 +52,16 @@ final class UninstallerViewModel {
     var selectedResidualIDs: Set<UUID> = []
     var errorMessage: String?
     private(set) var lastOutcome: Uninstaller.ExecuteOutcome?
+
+    /// User-controlled search text. Filters the visible list by
+    /// app name (case-insensitive substring match).
+    var searchText: String = ""
+
+    /// User-controlled sort order. Defaults to alphabetical (the
+    /// most predictable — and what `AppScanner.scan()` already
+    /// produces — so opening the screen "just works" until the
+    /// user picks a different sort).
+    var sortOrder: SortOrder = .alphabetical
 
     /// Cache of app icons keyed by bundle URL path, so the SwiftUI
     /// view doesn't have to call `NSWorkspace` on every render. We
@@ -43,6 +78,10 @@ final class UninstallerViewModel {
     /// background, so a fresh `scan()` can cancel the previous one.
     private var sizeTask: Task<Void, Never>?
 
+    /// Same as `sizeTask` but for the Spotlight `kMDItemLastUsedDate`
+    /// pass. Cancelled/restarted the same way.
+    private var lastUsedTask: Task<Void, Never>?
+
     private let scanner: AppScanner
     private let finder: ResidualFinder
     private let uninstaller: Uninstaller
@@ -55,6 +94,55 @@ final class UninstallerViewModel {
         self.scanner = scanner
         self.finder = finder
         self.uninstaller = uninstaller
+    }
+
+    /// The list the view renders. Filters by `searchText` (if any)
+    /// and sorts by `sortOrder`. `selectedApp` is rewritten to the
+    /// filtered/sorted identity so the detail pane still highlights
+    /// the right row after a sort change.
+    var visibleApps: [InstalledApp] {
+        let filtered: [InstalledApp]
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if query.isEmpty {
+            filtered = apps
+        } else {
+            filtered = apps.filter { $0.name.localizedCaseInsensitiveContains(query) }
+        }
+        return filtered.sorted(by: compareForSort)
+    }
+
+    private func compareForSort(_ lhs: InstalledApp, _ rhs: InstalledApp) -> Bool {
+        switch sortOrder {
+        case .alphabetical:
+            // Standard Finder-style: locale-aware, case-insensitive,
+            // and stable when names are equal (fall back to bundle id
+            // so the order is deterministic).
+            let lhsName = lhs.name.localizedCaseInsensitiveCompare(rhs.name)
+            if lhsName != .orderedSame { return lhsName == .orderedAscending }
+            return lhs.id < rhs.id
+        case .size:
+            // Largest first. Tiebreak by name so the order is stable
+            // as sizes stream in.
+            if lhs.bundleSize != rhs.bundleSize { return lhs.bundleSize > rhs.bundleSize }
+            return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+        case .installDate:
+            // Newest first. Apps with no mtime sink to the bottom.
+            switch (lhs.lastModified, rhs.lastModified) {
+            case let (l?, r?): return l > r
+            case (_?, nil):    return true
+            case (nil, _?):    return false
+            case (nil, nil):   return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+        case .lastOpened:
+            // Newest first. Apps that have never been launched
+            // (Spotlight returned nil) sink to the bottom.
+            switch (lhs.lastUsedDate, rhs.lastUsedDate) {
+            case let (l?, r?): return l > r
+            case (_?, nil):    return true
+            case (nil, _?):    return false
+            case (nil, nil):   return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+        }
     }
 
     /// Look up the cached icon for an app. Returns nil until
@@ -82,8 +170,10 @@ final class UninstallerViewModel {
     func scan() async {
         phase = .scanning
         errorMessage = nil
-        // Cancel any in-flight sizing from a previous scan.
+        // Cancel any in-flight background passes from a previous
+        // scan before we tear down the cached state.
         sizeTask?.cancel()
+        lastUsedTask?.cancel()
         bundleSizes.removeAll()
         let installed = await scanner.scan()
         apps = installed
@@ -95,6 +185,15 @@ final class UninstallerViewModel {
         // list for a couple of seconds.
         sizeTask = Task { [weak self] in
             await self?.computeBundleSizes()
+        }
+        // Same idea for the Spotlight "last opened" lookup. The
+        // MDItem call is cheap but synchronous, and we may have
+        // hundreds of apps, so we keep it off the initial render
+        // path. The user can sort by "Latest Opened" before the
+        // pass finishes — apps whose date hasn't streamed in yet
+        // sort to the bottom (no date = treat as never used).
+        lastUsedTask = Task { [weak self] in
+            await self?.loadLastUsedDates()
         }
     }
 
@@ -145,6 +244,33 @@ final class UninstallerViewModel {
             for await (id, bytes) in group {
                 if Task.isCancelled { return }
                 bundleSizes[id] = ByteSize(bytes: bytes)
+            }
+        }
+    }
+
+    /// Fetches Spotlight's `kMDItemLastUsedDate` for every app
+    /// concurrently, and writes each result back into the matching
+    /// entry of `apps`. Apps that have never been launched stay
+    /// with `lastUsedDate == nil` and sink to the bottom when the
+    /// user sorts by "Latest Opened". Honors `Task.isCancelled` so
+    /// a fresh `scan()` can abort the previous pass.
+    private func loadLastUsedDates() async {
+        let snapshot = apps
+        await withTaskGroup(of: (Int, Date?).self) { group in
+            for (idx, app) in snapshot.enumerated() {
+                let url = app.bundleURL
+                group.addTask {
+                    (idx, LastUsedDateLoader.lastUsedDate(for: url))
+                }
+            }
+            for await (idx, date) in group {
+                if Task.isCancelled { return }
+                guard idx < apps.count else { continue }
+                // `apps` is the source of truth and the view's
+                // @Observable binding — replacing an entry triggers
+                // a row re-render and (if "Latest Opened" is the
+                // current sort) a list re-order.
+                apps[idx] = apps[idx].withLastUsedDate(date)
             }
         }
     }
