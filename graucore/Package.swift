@@ -13,7 +13,6 @@ let package = Package(
             path: "Sources/graucore",
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals"),
-                .enableExperimentalFeature("StrictConcurrency"),
             ]
         ),
         .testTarget(

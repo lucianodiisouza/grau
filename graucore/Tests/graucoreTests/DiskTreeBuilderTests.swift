@@ -23,7 +23,7 @@ final class DiskTreeBuilderTests: XCTestCase {
     }
 
     func test_topFolders_emptyDir_returnsEmpty() async {
-        let builder = DiskTreeBuilder()
+        let builder = await DiskTreeBuilder()
         let nodes = await builder.topFolders(at: tempDir)
         XCTAssertEqual(nodes.count, 0)
     }
@@ -34,7 +34,7 @@ final class DiskTreeBuilderTests: XCTestCase {
         try Data(repeating: 0, count: 1000).write(to: tempDir.appendingPathComponent("big.txt"))
         try Data(repeating: 0, count: 500).write(to: tempDir.appendingPathComponent("medium.txt"))
 
-        let builder = DiskTreeBuilder()
+        let builder = await DiskTreeBuilder()
         let nodes = await builder.topFolders(at: tempDir, limit: 10)
         XCTAssertEqual(nodes.count, 3)
         XCTAssertEqual(nodes[0].name, "big.txt")
@@ -49,7 +49,7 @@ final class DiskTreeBuilderTests: XCTestCase {
                 to: tempDir.appendingPathComponent("file-\(i).txt")
             )
         }
-        let builder = DiskTreeBuilder()
+        let builder = await DiskTreeBuilder()
         let nodes = await builder.topFolders(at: tempDir, limit: 5)
         XCTAssertEqual(nodes.count, 5)
     }
@@ -60,7 +60,7 @@ final class DiskTreeBuilderTests: XCTestCase {
         try Data(repeating: 0, count: 100).write(to: sub.appendingPathComponent("a"))
         try Data(repeating: 0, count: 200).write(to: sub.appendingPathComponent("b"))
 
-        let builder = DiskTreeBuilder()
+        let builder = await DiskTreeBuilder()
         let size = await builder.size(of: tempDir)
         XCTAssertEqual(size.bytes, 300)
     }
